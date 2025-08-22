@@ -11,6 +11,7 @@ export default function LayoutClient({
 	const container={
     position:'relative',
 		className: 'flex flex-col items-center',
+    background:'bg-main/30 backdrop-blur-[10px]',
     size:'w-screen min-h-screen',
 	}
   const body={
