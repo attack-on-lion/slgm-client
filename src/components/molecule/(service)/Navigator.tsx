@@ -11,7 +11,7 @@ export default function ServiceNavigator() {
   ]
 
   return (
-    <nav className="absolute bottom-0 left-0 right-0 h-[49px] bg-white border-t border-gray-200">
+    <nav className="absolute bottom-0 left-0 right-0 h-[49px] bg-white border-t border-gray-200 z-30">
       <ul className="grid grid-cols-4 h-full">
         {items.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
