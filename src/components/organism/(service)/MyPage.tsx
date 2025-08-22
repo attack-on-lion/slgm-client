@@ -1,4 +1,4 @@
-import SectionCard from "@/components/atom/SectionCard";
+import SectionCard from "@/components/atom/Section";
 import ChallengeStatus from "@/components/molecule/(service)/ChallengeStatus";
 import { OnClick } from "fast-jsx/interface";
 import { cn } from "fast-jsx/util";

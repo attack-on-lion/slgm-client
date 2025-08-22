@@ -1,5 +1,5 @@
 'use client'
-import Section from "@/components/atom/SectionCard";
+import Section from "@/components/atom/Section";
 import ServiceHeader from "@/components/molecule/(service)/Header";
 import { State } from "fast-jsx/interface";
 import { cn } from "fast-jsx/util";

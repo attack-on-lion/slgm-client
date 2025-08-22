@@ -3,7 +3,7 @@ import { cn } from "fast-jsx/util"
 import MyPageOrganism from "./MyPage"
 import { State } from "fast-jsx/interface"
 import ChallengeStatus from "@/components/molecule/(service)/ChallengeStatus"
-import Section from "@/components/atom/SectionCard"
+import Section from "@/components/atom/Section"
 
 interface History{
 	name:string,
