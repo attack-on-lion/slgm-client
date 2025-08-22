@@ -1,3 +1,5 @@
+import Client from "./page.client";
+
 export default function MyPage(){
-	return <div>MyPage</div>
+	return <Client/>
 }
