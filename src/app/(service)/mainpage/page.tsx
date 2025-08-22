@@ -1,4 +1,15 @@
-export default function OverViewTemplate() {
+"use client";
+
+import React from "react";
+import { useRouter } from "next/navigation";
+
+export default function Page() {
+  const router = useRouter();
+
+  const handleChallengeClick = () => {
+    router.push("/challenge");
+  };
+
   return (
     <>
       <section className="relative w-full bg-[#DDF6F2] px-5 pt-6 pb-4 overflow-hidden">
@@ -47,14 +58,14 @@ export default function OverViewTemplate() {
         </p>
 
         <div className="mt-6 grid grid-cols-2 gap-4">
-          <PrimaryButton ariaLabel="챌린지">챌린지</PrimaryButton>
+          <PrimaryButton ariaLabel="챌린지" onClick={handleChallengeClick}>챌린지</PrimaryButton>
           <PrimaryButton ariaLabel="결제 내역">결제 내역</PrimaryButton>
         </div>
 
       </section>
-      <section className="bg-[#F5F6F8] px-5 py-6">
+      <section className="bg-[#F5F5F5] px-5 py-6">
         <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5">
-          <p className="text-[20px] font-extrabold leading-snug text-slate-800">
+          <p className="text-[20px] font-extrabold leading-snug">
             잔액이 189,500원 남았습니다.
           </p>
 
@@ -86,16 +97,46 @@ export default function OverViewTemplate() {
 
       </div>
 
-      {/* 하단 설명 */}
-      <div className="mt-2 text-right text-[14px]">
+            {/* 하단 설명 */}
+      <div className="mt-2 text-right text-[14px] text-slate-500">
         월 예산 중 70% 소비
       </div>
     </div>
   </div>
 </section>
 
+      {/* 결제 내역 위젯 (잔액 위젯 바로 아래) */}
+      <section className="bg-[#F5F6F8] px-5 pt-0 pb-8">
+        <div className="px-5 py-6">
+          {/* 헤더 */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[18px] font-bold text-slate-800">결제 내역</h3>
+            <button className="text-[14px] text-slate-500 hover:text-slate-700 transition-colors">
+              &gt;
+            </button>
+          </div>
+
+          {/* 결제 내역 카드 */}
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-4">
+            <div className="flex items-center justify-between">
+              {/* 왼쪽: 가맹점명과 시간 */}
+              <div>
+                <p className="text-[16px] font-bold text-slate-800">맥도날드</p>
+                <p className="text-[14px] text-slate-500 mt-1">15:12</p>
+              </div>
+              
+              {/* 오른쪽: 카테고리와 금액 */}
+              <div className="text-right">
+                <p className="text-[14px] text-[#64B5F6]">식비</p>
+                <p className="text-[16px] font-bold text-slate-800 mt-1">12,000원</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </>
-  );  
+  );
 }
 
 function Badge({ children, size = 70 }: { children: React.ReactNode; size?: number }) {
@@ -117,7 +158,6 @@ function BellIcon({ className = 'w-6 h-6 text-yellow-400' }: { className?: strin
     </svg>
   );
 }
-
 
 function PrimaryButton({
   children,
