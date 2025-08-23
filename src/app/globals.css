@@ -1,49 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-<<<<<<< HEAD
-
-  --color-main: #42D2B8;
-  --color-lightMain: #D0F9F1;
-
-  --color-point: #FF6B6B;
-  --color-lightPoint: #FFDBDB;
-
-  --color-point2: #FFCB4D;
-  --color-lightPoint2: #FFE094;
-
-  --color-text: #23273E;
-  --color-subTitle: #7B7B7B;
-  --color-subTitle2: #A0A0A0;
-  --color-subTitle3: #D3D3D3;
-
-  --color-stroke: #F0F0F0;
-  --color-bgColor: #F5F5F5;
-
-  --color-white: #FFFFFF;
-  --color-black: #000000;
-  --color-red:   #F30000;
-
-  --font-sans: system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Arial, sans-serif;
-  --font-title: system-ui, sans-serif;
-  --font-point: system-ui, sans-serif;
-
-  --spacing-gutter: 24px;
-  --spacing-title: 16px;
-  --spacing-content: 20px;
-}
-
-@layer base {
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { height: 100%; }
-  body { @apply bg-bgColor text-text font-sans antialiased; }
-}
-
-@layer utilities {
-  .container-gutter { padding-left: var(--spacing-gutter); padding-right: var(--spacing-gutter); }
-  .mt-title { margin-top: var(--spacing-title); }
-  .space-y-content > * + * { margin-top: var(--spacing-content); }
-=======
   /* Main Colors */
   --color-main: #42D2B8;
   --color-light-main: #D0F9F1;
@@ -71,5 +28,26 @@
   
   /* Accent Colors */
   --color-red: #F30000;
->>>>>>> origin/main
+  
+  /* Fonts */
+  --font-sans: system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Arial, sans-serif;
+  --font-title: system-ui, sans-serif;
+  --font-point: system-ui, sans-serif;
+  
+  /* Spacing */
+  --spacing-gutter: 24px;
+  --spacing-title: 16px;
+  --spacing-content: 20px;
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { @apply bg-bg-color text-text font-sans antialiased; }
+}
+
+@layer utilities {
+  .container-gutter { padding-left: var(--spacing-gutter); padding-right: var(--spacing-gutter); }
+  .mt-title { margin-top: var(--spacing-title); }
+  .space-y-content > * + * { margin-top: var(--spacing-content); }
 }

@@ -77,7 +77,7 @@ export default function ChallengePage() {
       <section className="px-5 mt-6">
         <div className="flex gap-3 overflow-x-auto pb-2">
           <button className="px-4 py-2 bg-[#DDF6F2] border border-[#42D2B8] text-[#42D2B8] rounded-full text-[14px] font-medium whitespace-nowrap">
-            전체
+            모든 소비
           </button>
           <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-full text-[14px] font-medium whitespace-nowrap hover:bg-slate-50">
             3일

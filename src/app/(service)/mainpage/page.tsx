@@ -10,6 +10,10 @@ export default function Page() {
     router.push("/challenge");
   };
 
+  const handleReportsClick = () => {
+    router.push("/reports");
+  };
+
   return (
     <>
       <section className="relative w-full bg-[#DDF6F2] px-5 pt-6 pb-4 overflow-hidden">
@@ -59,7 +63,7 @@ export default function Page() {
 
         <div className="mt-6 grid grid-cols-2 gap-4">
           <PrimaryButton ariaLabel="챌린지" onClick={handleChallengeClick}>챌린지</PrimaryButton>
-          <PrimaryButton ariaLabel="결제 내역">결제 내역</PrimaryButton>
+          <PrimaryButton ariaLabel="결제 내역" onClick={handleReportsClick}>결제 내역</PrimaryButton>
         </div>
 
       </section>
@@ -111,7 +115,10 @@ export default function Page() {
           {/* 헤더 */}
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[18px] font-bold text-slate-800">결제 내역</h3>
-            <button className="text-[14px] text-slate-500 hover:text-slate-700 transition-colors">
+            <button 
+              onClick={handleReportsClick}
+              className="text-[14px] text-slate-500 hover:text-slate-700 transition-colors"
+            >
               &gt;
             </button>
           </div>

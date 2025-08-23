@@ -1,0 +1,5 @@
+[33m26861ab[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat: create Store interface
+[33m5f787e0[m fix: manage overflow control
+[33m1ba7d96[m feat: page routing
+[33m3e80a38[m feat: create ```StoreTemplate```
+[33m9d498f9[m feat: create ```MyPageTemplate```

@@ -226,15 +226,15 @@ export default function ChallengeSetupPage() {
                 {showCategoryDropdown && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-lg z-10 max-h-64 overflow-y-auto">
                     <div className="p-3 space-y-1">
-                                             {[
-                         "전체", "식비", "카페, 간식", "쇼핑", "취미, 여가", 
-                         "의료, 건강", "술, 유흥", "주거, 통신"
-                       ].map((category) => (
+                      {[
+                        "식비", "카페, 간식", "쇼핑", "취미, 여가", 
+                        "의료, 건강", "술, 유흥", "주거, 통신"
+                      ].map((category) => (
                         <button
                           key={category}
                           onClick={() => handleCategorySelect(category)}
                           className={`
-                            w-full text-left px-3 py-2 rounded-lg text-[14px] transition-all duration-200
+                            w-full text-left px-3 py-2 rounded-lg text-[14px] transition-all duration-200 whitespace-nowrap
                             ${selectedCategory === category
                               ? "bg-[#42D2B8] text-white"
                               : "text-slate-700 hover:bg-slate-50 hover:text-slate-800"
@@ -259,7 +259,7 @@ export default function ChallengeSetupPage() {
                   }
                 `}
               >
-                전체 결제 내역
+                모든 소비
               </button>
             </div>
           </div>
