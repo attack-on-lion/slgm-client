@@ -1,9 +1,9 @@
 'use client'
 import { cn } from "fast-jsx/util"
-import MyPageOrganism from "./MyPage"
 import { State } from "fast-jsx/interface"
 import ChallengeStatus from "@/components/molecule/(service)/ChallengeStatus"
 import Section from "@/components/atom/Section"
+import MyCouponButton from "@/components/molecule/(service)/MyCoupon.button"
 
 interface History{
 	name:string,
@@ -39,9 +39,7 @@ export default function MyPageDetail({state,histories}:{state:State<boolean>,his
 			<ChallengeStatus
 				howMuchChallenge={10} 
 				point={1000} 
-				button={<button 
-					className="bg-main leading-none px-[16px] py-[7px] text-white text-[14px] font-bold rounded-full"
-					onClick={() => setIsDetail(!isDetail)}>내 쿠폰함</button>} 
+				button={<MyCouponButton/>} 
 				version="v2"
 			/>
 			<div className="flex gap-x-[22px]">
