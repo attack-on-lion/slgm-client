@@ -1,6 +1,6 @@
 'use client'
 import ServiceHeader from "@/components/molecule/(service)/Header";
-import MyPageOrganism from "@/components/organism/(service)/MyPage";
+import MyPageTemplate from "@/components/template/(service)/MyPage"; 
 import MyPageDetail from "@/components/organism/(service)/MyPage.detail";
 import MyPageCharacter from "@/components/organism/(service)/MyPage.character";
 import { cn } from "fast-jsx/util";
@@ -16,16 +16,16 @@ export default function Client(){
 	return <div>
 		<ServiceHeader title="마이페이지" option={{isBack:true}} />
 		<div className={cn(body)}>
-			<MyPageOrganism.Point 
+			<MyPageTemplate.Point 
 				howMuchChallenge={10} 
 				point={1000} 
 				button={<button onClick={() => setIsDetail(!isDetail)}>자세히 보기</button>} 
 			/>
-			<MyPageOrganism.Character character={{
+			<MyPageTemplate.Character character={{
 				imageUrl:"/images/다람쥐.svg",
 				name:"다람이",
 			}} onClick={()=>setIsCharacter(true)} />
-			<MyPageOrganism.Config />
+			<MyPageTemplate.Config />
 			<MyPageDetail state={[isDetail, setIsDetail]} histories={[{
 				name:"캐릭터 구매",
 				date:new Date(),
