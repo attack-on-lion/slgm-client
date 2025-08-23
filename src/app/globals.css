@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+<<<<<<< HEAD
 
   --color-main: #42D2B8;
   --color-lightMain: #D0F9F1;
@@ -42,4 +43,33 @@
   .container-gutter { padding-left: var(--spacing-gutter); padding-right: var(--spacing-gutter); }
   .mt-title { margin-top: var(--spacing-title); }
   .space-y-content > * + * { margin-top: var(--spacing-content); }
+=======
+  /* Main Colors */
+  --color-main: #42D2B8;
+  --color-light-main: #D0F9F1;
+  
+  /* Point Colors */
+  --color-point-color: #FF6B6B;
+  --color-light-point: #FFDBDB;
+  --color-point-color-2: #FFCB4D;
+  --color-light-point-2: #FFE094;
+  
+  /* Basic Colors */
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+  
+  /* Text Colors */
+  --color-text: #23273E;
+  --color-sub-title: #7B7B7B;
+  --color-sub-title-2: #A0A0A0;
+  --color-sub-title-3: #D3D3D3;
+  
+  /* Background & Stroke Colors */
+  --color-bg-color: #F5F5F5;
+  --color-bg-color-2: #F4F4F4;
+  --color-stroke: #F0F0F0;
+  
+  /* Accent Colors */
+  --color-red: #F30000;
+>>>>>>> origin/main
 }
