@@ -12,7 +12,7 @@ export default function ServiceHeader({title,option}:{
 	const container={
 		position:'relative',
 		display:'flex justify-center',
-		paddings:'pt-[21px] pb-[8px] px-[20px]',
+		paddings:'pt-[21px] pb-[12px] px-[20px]',
 		background:'bg-white',
 		size:'w-full',
 	}
