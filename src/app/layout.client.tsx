@@ -1,6 +1,9 @@
 'use client'
+import Splash from '@/components/template/Splash';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cn } from 'fast-jsx/util'
+import { useState } from 'react'
+
 const client =new QueryClient();
 
 export default function LayoutClient({
@@ -8,6 +11,7 @@ export default function LayoutClient({
 }: {
   children: React.ReactNode;
 }) {
+  const [showSplash, setShowSplash] = useState(true)
 	const container={
     position:'relative',
 		className: 'flex flex-col items-center',
@@ -19,10 +23,14 @@ export default function LayoutClient({
     overflow:'overflow-y-scroll',
   }
   return <QueryClientProvider client={client}>
-		<div className={cn(container)}>
-      <div className={cn(body)}>
-        {children}
+    {showSplash ? (
+      <Splash onFinish={() => setShowSplash(false)} />
+    ) : (
+      <div className={cn(container)}>
+        <div className={cn(body)}>
+          {children}
+        </div>
       </div>
-    </div>
+    )}
 	</QueryClientProvider>;
 }
