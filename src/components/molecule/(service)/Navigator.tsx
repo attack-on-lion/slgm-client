@@ -5,7 +5,7 @@ export default function ServiceNavigator() {
   const pathname = usePathname()
   const items = [
     { href: '/', label: '홈', icon: <IconHome className="w-7 h-7" /> },
-    { href: '/reports', label: '분석', icon: <IconChart className="w-7 h-7" /> },
+    { href: '/analysis', label: '분석', icon: <IconChart className="w-7 h-7" /> },
     { href: '/stores', label: '상품', icon: <IconBag className="w-7 h-7" /> },
     { href: '/my-page', label: '마이페이지', icon: <IconUser className="w-7 h-7" /> }
   ]
