@@ -2,13 +2,11 @@
 import ServiceHeader from "@/components/molecule/(service)/Header";
 import MyPageTemplate from "@/components/template/(service)/MyPage"; 
 import MyPageDetail from "@/components/organism/(service)/MyPage.detail";
-import MyPageCharacter from "@/components/organism/(service)/MyPage.character";
 import { cn } from "fast-jsx/util";
 import { useState } from "react";
 
 export default function Client(){
 	const [isDetail, setIsDetail] = useState<boolean>(false);
-	const [isCharacter, setIsCharacter] = useState<boolean>(false);
 	const body={
 		display:'flex flex-col gap-y-[8px]',
 		background:'bg-bg-color-2',
@@ -22,9 +20,9 @@ export default function Client(){
 				button={<button onClick={() => setIsDetail(!isDetail)}>자세히 보기</button>} 
 			/>
 			<MyPageTemplate.Character character={{
-				imageUrl:"/images/다람쥐.svg",
+				imageUrl:"/images/characters/다람쥐.png",
 				name:"다람이",
-			}} onClick={()=>setIsCharacter(true)} />
+			}} />
 			<MyPageTemplate.Config />
 			<MyPageDetail state={[isDetail, setIsDetail]} histories={[{
 				name:"캐릭터 구매",
@@ -42,7 +40,6 @@ export default function Client(){
 				howLong:10,
 				point:1000,
 			}]} />
-			<MyPageCharacter state={[isCharacter, setIsCharacter]} />
 		</div>
 	</div>
 }

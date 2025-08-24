@@ -21,56 +21,66 @@ export default function Client(){
 		<div className={cn(body)}>
 			<StoreTemplate.Recommend items={[{
 				storeName:"추천 상점",
-				name:"추천 상품 1",
-				point:"1000",
-				imageUrl:"/images/다람쥐.svg",
+				name:"추천 상품 1",		
+				point:1000,
+				imageUrl:"/images/characters/다람쥐.png",	
+				storeType:'음식점',
 			},{
 				storeName:"추천 상점",
 				name:"추천 상품 2",
-				point:"1000",
-				imageUrl:"/images/다람쥐.svg",
+				point:1000,
+				imageUrl:"/images/characters/다람쥐.png",
+				storeType:'음식점',
 			},{
 				storeName:"추천 상점",
 				name:"추천 상품 3",
-				point:"1000",
-				imageUrl:"/images/다람쥐.svg",
+				point:1000,
+				imageUrl:"/images/characters/다람쥐.png",
+				storeType:'음식점',
 			}, {
 				storeName:"추천 상점",
 				name:"추천 상품 4",
-				point:"1000",
-				imageUrl:"/images/다람쥐.svg",
+				point:1000,
+				imageUrl:"/images/characters/다람쥐.png",
+				storeType:'음식점',
 			}, ]}/>
 		</div>
 		<StoreTemplate.OverView items={[{
 			storeName:"추천 상점",
 			name:"인기 상품 A",
-			point:"1000",
-			imageUrl:"/images/다람쥐.svg",
+			point:1000,
+			imageUrl:"/images/characters/다람쥐.png",
+			storeType:'음식점',
 		},{
 			storeName:"추천 상점",
 			name:"인기 상품 B",
-			point:"1000",
-			imageUrl:"/images/다람쥐.svg",
+			point:1000,		
+			imageUrl:"/images/characters/다람쥐.png",
+			storeType:'음식점',
 		},{
 			storeName:"추천 상점",
 			name:"인기 상품 C",
-			point:"1000",
-			imageUrl:"/images/다람쥐.svg",
+			point:1000,
+			imageUrl:"/images/characters/다람쥐.png",
+			storeType:'카페',
 		},{
 			storeName:"추천 상점",
 			name:"인기 상품 D",
-			point:"1000",
-			imageUrl:"/images/다람쥐.svg",
+			point:1000,
+			imageUrl:"/images/characters/다람쥐.png",
+			storeType:'편의점',
 		},{
 			storeName:"추천 상점",
 			name:"인기 상품 E",
-			point:"1000",
-			imageUrl:"/images/다람쥐.svg",
+			point:1000,
+			imageUrl:"/images/characters/다람쥐.png",
+			storeType:'마트',
 		},{
 			storeName:"추천 상점",
 			name:"인기 상품 F",
-			point:"1000",
-			imageUrl:"/images/다람쥐.svg",
-		},]}/>
+			point:1000,
+			imageUrl:"/images/characters/다람쥐.png",
+			storeType:'기타',
+		}]}/>
 	</div>
 }

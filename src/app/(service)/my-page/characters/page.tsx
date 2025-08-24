@@ -1,5 +1,5 @@
 import Client from "./page.client";
 
-export default function CouponsPage(){
+export default function CharactersPage(){
 	return <Client/>
 }
