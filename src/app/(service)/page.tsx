@@ -1,9 +1,9 @@
-import OverViewTemplate from "@/components/template/(service)/OverView.template"
+import MainPage from "./mainpage/page"
 
 export default function ServicePage(){
   return (
     <main>
-      <OverViewTemplate/>
+      <MainPage/>
     </main>
   )
 }

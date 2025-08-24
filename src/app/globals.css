@@ -28,4 +28,26 @@
   
   /* Accent Colors */
   --color-red: #F30000;
+  
+  /* Fonts */
+  --font-sans: system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Arial, sans-serif;
+  --font-title: system-ui, sans-serif;
+  --font-point: system-ui, sans-serif;
+  
+  /* Spacing */
+  --spacing-gutter: 24px;
+  --spacing-title: 16px;
+  --spacing-content: 20px;
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { @apply bg-bg-color text-text font-sans antialiased; }
+}
+
+@layer utilities {
+  .container-gutter { padding-left: var(--spacing-gutter); padding-right: var(--spacing-gutter); }
+  .mt-title { margin-top: var(--spacing-title); }
+  .space-y-content > * + * { margin-top: var(--spacing-content); }
 }
