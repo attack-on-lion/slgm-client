@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function ChallengePage() {
   const router = useRouter();
@@ -51,7 +52,7 @@ export default function ChallengePage() {
             </button>
           </div>
           <div className="ml-4">
-            <img src="/squirrel.svg" alt="다람쥐" className="w-20 h-20" />
+            <Image src="/squirrel.svg" alt="다람쥐" width={80} height={80} />
           </div>
         </div>
       </section>
@@ -62,7 +63,7 @@ export default function ChallengePage() {
         <div className="flex gap-4 overflow-x-auto pb-4">
           {challengeData.map((challenge, index) => (
             <div key={index} className="min-w-[280px] relative">
-              <img src="/chCard.svg" alt="챌린지 카드" className="w-full h-auto" />
+              <Image src="/chCard.svg" alt="챌린지 카드" width={280} height={200} className="w-full h-auto" />
               
               <div className="absolute bottom-4 left-4 right-4">
                 <button className="w-full bg-white border border-slate-800 text-slate-800 py-2 rounded-lg text-[14px] font-medium hover:bg-slate-50 transition-colors">
