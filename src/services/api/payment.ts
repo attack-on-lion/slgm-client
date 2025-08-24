@@ -274,38 +274,33 @@ async function getMonthlyComparison(userId: number, selectedMonth: number): Prom
     const previousMonth = selectedMonth > 1 ? selectedMonth - 1 : 12;
     
     // 월별로 다른 더미 데이터 생성 (실제로는 API에서 가져올 데이터)
-    const monthlyData = {
-      8: {
-        topCategories: [
-          { rank: 1, categoryName: "식비", currentMonthAmount: 520000, previousMonthAmount: 380000, increaseAmount: 140000, increasePercentage: 36.8 },
-          { rank: 2, categoryName: "여가", currentMonthAmount: 350000, previousMonthAmount: 280000, increaseAmount: 70000, increasePercentage: 25.0 },
-          { rank: 3, categoryName: "쇼핑", currentMonthAmount: 280000, previousMonthAmount: 200000, increaseAmount: 80000, increasePercentage: 40.0 },
-          { rank: 4, categoryName: "카페", currentMonthAmount: 200000, previousMonthAmount: 150000, increaseAmount: 50000, increasePercentage: 33.3 }
-        ]
-      },
-      7: {
-        topCategories: [
-          { rank: 1, categoryName: "식비", currentMonthAmount: 380000, previousMonthAmount: 420000, increaseAmount: -40000, increasePercentage: -9.5 },
-          { rank: 2, categoryName: "여가", currentMonthAmount: 280000, previousMonthAmount: 320000, increaseAmount: -40000, increasePercentage: -12.5 },
-          { rank: 3, categoryName: "쇼핑", currentMonthAmount: 200000, previousMonthAmount: 250000, increaseAmount: -50000, increasePercentage: -20.0 },
-          { rank: 4, categoryName: "카페", currentMonthAmount: 150000, previousMonthAmount: 180000, increaseAmount: -30000, increasePercentage: -16.7 }
-        ]
-      },
-      9: {
-        topCategories: [
-          { rank: 1, categoryName: "식비", currentMonthAmount: 480000, previousMonthAmount: 520000, increaseAmount: -40000, increasePercentage: -7.7 },
-          { rank: 2, categoryName: "여가", currentMonthAmount: 320000, previousMonthAmount: 350000, increaseAmount: -30000, increasePercentage: -8.6 },
-          { rank: 3, categoryName: "쇼핑", currentMonthAmount: 250000, previousMonthAmount: 280000, increaseAmount: -30000, increasePercentage: -10.7 },
-          { rank: 4, categoryName: "카페", currentMonthAmount: 180000, previousMonthAmount: 200000, increaseAmount: -20000, increasePercentage: -10.0 }
-        ]
-      }
+    const monthlyData: Record<number, any[]> = {
+      8: [
+        { rank: 1, categoryName: "식비", currentMonthAmount: 520000, previousMonthAmount: 380000, increaseAmount: 140000, increasePercentage: 36.8 },
+        { rank: 2, categoryName: "여가", currentMonthAmount: 350000, previousMonthAmount: 280000, increaseAmount: 70000, increasePercentage: 25.0 },
+        { rank: 3, categoryName: "쇼핑", currentMonthAmount: 280000, previousMonthAmount: 200000, increaseAmount: 80000, increasePercentage: 40.0 },
+        { rank: 4, categoryName: "카페", currentMonthAmount: 200000, previousMonthAmount: 150000, increaseAmount: 50000, increasePercentage: 33.3 }
+      ],
+      7: [
+        { rank: 1, categoryName: "식비", currentMonthAmount: 380000, previousMonthAmount: 420000, increaseAmount: -40000, increasePercentage: -9.5 },
+        { rank: 2, categoryName: "여가", currentMonthAmount: 280000, previousMonthAmount: 320000, increaseAmount: -40000, increasePercentage: -12.5 },
+        { rank: 3, categoryName: "쇼핑", currentMonthAmount: 200000, previousMonthAmount: 250000, increaseAmount: -50000, increasePercentage: -20.0 },
+        { rank: 4, categoryName: "카페", currentMonthAmount: 150000, previousMonthAmount: 180000, increaseAmount: -30000, increasePercentage: -16.7 }
+      ],
+      9: [
+        { rank: 1, categoryName: "식비", currentMonthAmount: 480000, previousMonthAmount: 520000, increaseAmount: -40000, increasePercentage: -7.7 },
+        { rank: 2, categoryName: "여가", currentMonthAmount: 320000, previousMonthAmount: 350000, increaseAmount: -30000, increasePercentage: -8.6 },
+        { rank: 3, categoryName: "쇼핑", currentMonthAmount: 250000, previousMonthAmount: 280000, increaseAmount: -30000, increasePercentage: -10.7 },
+        { rank: 4, categoryName: "카페", currentMonthAmount: 180000, previousMonthAmount: 200000, increaseAmount: -20000, increasePercentage: -10.0 }
+      ]
     };
     
-    const monthData = monthlyData[selectedMonth as keyof typeof monthlyData] || DUMMY_MONTHLY_COMPARISON.topCategories;
+    const monthData = monthlyData[selectedMonth] || DUMMY_MONTHLY_COMPARISON.topCategories;
     
     return {
       userId: 1,
       currentMonth: `${new Date().getFullYear()}-${String(currentMonth).padStart(2, '0')}`,
+      previousMonth: `${new Date().getFullYear()}-${String(previousMonth).padStart(2, '0')}`,
       topCategories: monthData
     };
   } catch (error) {

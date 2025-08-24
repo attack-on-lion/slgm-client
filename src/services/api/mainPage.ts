@@ -28,7 +28,7 @@ export const mainPageApi = {
         throw new Error('메인 페이지 데이터 조회에 실패했습니다.');
       }
 
-      return await response.json();
+      return await response.json() as MainPageData;
     } catch (error) {
       console.error('메인 페이지 데이터 조회 실패:', error);
       // CORS 문제 해결 전까지 더미 데이터 반환

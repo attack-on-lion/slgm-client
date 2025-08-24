@@ -8,3 +8,37 @@ export interface Item{
 	imageUrl:string,
 	storeType:StoreType,
 }
+
+interface Gifticon{
+	id:number,
+	name:string,
+	price:number,
+	imageUrl:string,
+	createdAt:string,
+	isRecommend:boolean,
+}
+export interface StoreApi{
+	gifticonlist: Gifticon[],
+	nextCursor: {
+		lastStoreName: string,
+		lastGifticonName: string,
+		lastId: number,
+		lastCreatedAt: string,
+	},
+	hasNext: boolean,
+	size: number,
+}
+
+export interface CouponApi{
+	AVAILABLE : Coupon[],
+	USED: Coupon[],
+}
+
+export interface Coupon{
+	id:number,
+	category:string,
+	storeName:string,
+	name:string,
+	imageUrl:string,
+	expiredAt:string,
+}

@@ -1,7 +1,7 @@
 import { handler } from "api-wizard"
 
 const config={
-	api:"https://api.slgmslgm.com/api"
+	api: "/api/server"
 }
 const http=handler(config)
 

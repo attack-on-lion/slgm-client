@@ -38,7 +38,7 @@ export const userApi = {
         throw new Error('유저 정보 추가에 실패했습니다.');
       }
 
-      return await response.json();
+      return await response.json() as UserCreateResponse;
     } catch (error) {
       console.error('유저 정보 추가 실패:', error);
       throw error;
@@ -62,7 +62,7 @@ export const userApi = {
         throw new Error('유저 정보 조회에 실패했습니다.');
       }
 
-      return await response.json();
+      return await response.json() as UserProfile;
     } catch (error) {
       console.error('유저 정보 조회 실패:', error);
       // CORS 문제 해결 전까지 임시 더미 데이터 반환

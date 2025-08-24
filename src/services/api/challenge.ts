@@ -139,7 +139,7 @@ const DUMMY_AVAILABLE_CHALLENGES = [
 // 유효 챌린지 조회
 async function getActiveChallenge(): Promise<ActiveChallenge> {
   try {
-    const response = await api.get('/challenges/active');
+    const response = await api.get<ActiveChallenge>('/challenges/active');
     return response.data;
   } catch (error) {
     console.error('활성 챌린지 조회 실패:', error);
@@ -150,7 +150,7 @@ async function getActiveChallenge(): Promise<ActiveChallenge> {
 // 완료된 챌린지 조회
 async function getCompletedChallenges(): Promise<CompletedChallenge[]> {
   try {
-    const response = await api.get('/challenges/completed');
+    const response = await api.get<CompletedChallenge[]>('/challenges/completed');
     return response.data;
   } catch (error) {
     console.error('완료된 챌린지 조회 실패:', error);
@@ -183,13 +183,8 @@ async function createChallenge(data: ChallengeCreateRequest): Promise<ChallengeC
 
 // 추천 챌린지 생성
 async function createRecommendations(data: RecommendationCreateRequest): Promise<RecommendationCreateResponse> {
-  try {
-    const response = await api.post('/challenges/recommendations', data);
+    const response = await api.post<RecommendationCreateRequest, RecommendationCreateResponse>('/challenges/recommendations', data);
     return response.data;
-  } catch (error) {
-    console.error('추천 챌린지 생성 실패:', error);
-    throw error;
-  }
 }
 
 // 추천 챌린지 전체 조회
@@ -227,7 +222,7 @@ async function getChallengeById(id: number): Promise<ChallengeDetail> {
 // 시작 가능한 모든 챌린지 조회
 async function getAvailableChallenges(): Promise<any[]> {
   try {
-    const response = await api.get('/challenges/available');
+    const response = await api.get<any[]>('/challenges/available');
     return response.data;
   } catch (error) {
     console.error('시작 가능한 챌린지 조회 실패:', error);
