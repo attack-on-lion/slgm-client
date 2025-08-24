@@ -1,8 +1,8 @@
-	import { Character } from "@/interfaces/Character";
+	import { CharacterRender } from "@/interfaces/Character";
 import { cn } from "fast-jsx/util";
-import Image from "next/image";
+import Image from "next/image";	
 
-function CharacterCard({character, isFocus}:{character:Character, isFocus:boolean}){
+function CharacterCard({character, isFocus}:{ character:CharacterRender, isFocus:boolean}){
 	const container={
 		position:'relative',
 		display:'flex flex-col',
@@ -31,7 +31,7 @@ function CharacterCard({character, isFocus}:{character:Character, isFocus:boolea
 			<div className={`absolute top-0 left-0 w-full h-full bg-[#BEBEBE8F]/56 transition-opacity duration-200 ease-in-out ${isFocus ? 'opacity-0' : 'opacity-100'}`}/>
 		</div>
 }
-function CharacterCardAbbreviation({character}:{character:Character}){
+function CharacterCardAbbreviation({character}:{character:CharacterRender}){
 	const container={
 		display:'flex flex-col items-center gap-y-[12px]',
 		size:'w-[157px] h-[184px]',
