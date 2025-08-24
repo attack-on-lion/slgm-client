@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Page() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function Page() {
 
         {/* 일러스트 */}
         <div className="mt-6 flex justify-center">
-          <img src="/squirrel.svg" alt="다람쥐" className="w-[197px] h-[198px]" />
+          <Image src="/squirrel.svg" alt="다람쥐" width={197} height={198} />
         </div>
 
         {/* 금액 정보 */}
@@ -57,7 +58,7 @@ export default function Page() {
       <section className="bg-white px-6 pt-6 pb-10">
         <p className="text-center text-[18px] leading-7 font-semibold text-slate-700">
           <span className="text-[] text-[22px] align-middle"></span>
-          "카드 대신 이성을 꺼내자"
+          {"카드 대신 이성을 꺼내자"}
           <span className="text-slate-300 text-[22px] align-middle"></span>
         </p>
 
