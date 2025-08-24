@@ -4,6 +4,7 @@ import { State } from "fast-jsx/interface"
 import ChallengeStatus from "@/components/molecule/(service)/ChallengeStatus"
 import Section from "@/components/atom/Section"
 import MyCouponButton from "@/components/molecule/(service)/MyCoupon.button"
+import { useRouter } from "next/navigation"
 
 interface History{
 	name:string,
@@ -13,7 +14,8 @@ interface History{
 }
 
 export default function MyPageDetail({state,histories}:{state:State<boolean>,histories:History[]}){
-	const [isDetail, setIsDetail] = state
+	const [isDetail, setIsDetail] = state;
+	const router = useRouter();
 	const container={
 		position:"absolute z-40",
 		display:'flex flex-col gap-y-[8px]',
@@ -43,7 +45,12 @@ export default function MyPageDetail({state,histories}:{state:State<boolean>,his
 				version="v2"
 			/>
 			<div className="flex gap-x-[22px]">
-				<button className={cn(buttonBox)}>캐릭터 구매하기</button>
+				<button 
+				className={cn(buttonBox)}
+				onClick={()=>{
+					router.push('/my-page/characters')
+				}}
+				>캐릭터 구매하기</button>
 				<button className={cn(buttonBox)}>포인트</button>
 			</div>
 			</div>

@@ -15,10 +15,11 @@ function Point({howMuchChallenge,point, button}:{howMuchChallenge:number,point:n
 	</SectionCard>
 }
 
-function Character({character, onClick}:{character?:{
+function Character({character, }:{character?:{
 	imageUrl:string,
 	name:string,
-}, onClick:OnClick<boolean>}){
+}})
+{
 	const cardBox={
 		display:'flex flex-col gap-y-[22px] items-center justify-center',
 		size:'w-[345px] h-[262px]',
@@ -26,7 +27,7 @@ function Character({character, onClick}:{character?:{
 		boxShadow:"shadow-[0_2px_10px_0_rgba(0,0,0,0.1)]",
 	} 
 	return <SectionCard title="캐릭터">
-		<div onClick={()=>onClick()} className={cn(cardBox)}>
+		<div className={cn(cardBox)}>
 			<Image src={character?.imageUrl||''} 
 			alt="character" 
 			width={141} 
