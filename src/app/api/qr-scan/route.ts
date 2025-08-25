@@ -10,18 +10,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // payments API 호출
-    const response = await fetch(`${request.nextUrl.origin}/api/payments`, {
-      method: 'POST',
+    // 기프티콘 사용 처리 API 호출 (PATCH 메서드)
+    const response = await fetch(`${request.nextUrl.origin}/api/server/users/1/gifticons/${gifticonId}/use`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        gifticonId: parseInt(gifticonId),
-        code: code,
-        timestamp: new Date().toISOString(),
-        scannedAt: new Date().toISOString()
-      }),
     });
 
     if (response.ok) {
@@ -29,7 +23,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/payment/success', request.url));
     } else {
       // 실패 시 에러 페이지로 리다이렉트
-      return NextResponse.redirect(new URL('/error?message=Payment Failed', request.url));
+      return NextResponse.redirect(new URL('/error?message=Gifticon Usage Failed', request.url));
     }
   } catch (error) {
     console.error('QR 스캔 처리 실패:', error);
