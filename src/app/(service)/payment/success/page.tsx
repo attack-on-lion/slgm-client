@@ -1,18 +1,15 @@
 'use client'
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "fast-jsx/util";
-import { useEffect, useState } from "react";
 
 export default function PaymentSuccessPage(){
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [isLoading, setIsLoading] = useState(true);
-	const [params, setParams] = useState<{
-		code: string | null;
-		gifticonId: string | null;
-		userId: string | null;
-	}>({ code: null, gifticonId: null, userId: null });
-
+	
+	// searchParams에서 직접 값을 가져오기
+	const code = searchParams?.get('code');
+	const gifticonId = searchParams?.get('gifticonId');
+	const userId = searchParams?.get('userId');
 
 	const container = {
 		display: 'flex flex-col items-center justify-center',
@@ -76,9 +73,9 @@ export default function PaymentSuccessPage(){
 				{/* 디버깅용 정보 (개발 환경에서만 표시) */}
 				{process.env.NODE_ENV === 'development' && (
 					<div className="text-xs text-gray-400 mt-4 p-2 bg-gray-50 rounded">
-						<div>Code: {params.code}</div>
-						<div>Gifticon ID: {params.gifticonId}</div>
-						<div>User ID: {params.userId}</div>
+						<div>Code: {code}</div>
+						<div>Gifticon ID: {gifticonId}</div>
+						<div>User ID: {userId}</div>
 					</div>
 				)}
 
