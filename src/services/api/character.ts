@@ -15,7 +15,7 @@ async function getCharacterByUserId(userId:number){
 }
 
 async function buyCharacter(userId:number, characterId:number, price:number){
-	const response=await api.post(`/users/${userId}/charactors/${characterId}/purchase`, {price})
+	const response=await api.post(`/user/${userId}/charactors/${characterId}/purchase`, {price})
 	return response.data
 }
 
