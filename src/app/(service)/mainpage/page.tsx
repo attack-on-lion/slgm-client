@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ServiceNavigator from "@/components/molecule/(service)/Navigator";
 import paymentApi from "@/services/api/payment";
-import { PaymentItem } from "@/interfaces/Payment";
+import { PaymentItem, PaymentSummary } from "@/interfaces/Payment";
 import useSign from "@/hooks/useSign";
 import Image from "next/image";
 
@@ -14,6 +14,7 @@ export default function MainPage() {
   const [recentPayment, setRecentPayment] = useState<PaymentItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [balanceInfo, setBalanceInfo] = useState<any>(null);
+  const[summary, setSummary] = useState<PaymentSummary>();
   const [budgetStatus, setBudgetStatus] = useState<any>(null);
 
   const navigateToChallenge = () => router.push("/challenge");
@@ -41,7 +42,7 @@ export default function MainPage() {
             page: 0,
             size: 1
           });
-          
+          setSummary(response.summary);
           if (response.items && response.items.length > 0) {
             setRecentPayment(response.items[0]);
           }
@@ -105,11 +106,11 @@ export default function MainPage() {
           <p className="text-slate-500 text-[12px]">사용 가능 금액</p>
           <div className="mt-1.5 flex items-baseline gap-2.5">
             <span className="text-[28px] font-extrabold tracking-tight text-slate-800">
-              {(userData?.point || 0).toLocaleString()}원
+              {(Number(userData?.baseAmount)-Number(summary?.totalExpense)  || 0).toLocaleString()}원
             </span>
             <span className="text-[22px] text-slate-400">/</span>
             <span className="text-[22px] text-slate-400">
-              {(userData?.point || 0).toLocaleString()}원
+              {(userData?.baseAmount || 0).toLocaleString()}원
             </span>
           </div>
         </div>
