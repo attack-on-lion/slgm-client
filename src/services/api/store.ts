@@ -34,14 +34,8 @@ async function purchaseGifticon(userId:number, gifticonId:number){
 }
 
 async function implementGifticon(userId:number, gifticonId:number){
-	try {
-		const response = await api.patch(`/users/${userId}/gifticons/${gifticonId}/use`)
-		console.log('기프티콘 사용 API 호출 성공:', response);
-		return response.data
-	} catch (error) {
-		console.error('기프티콘 사용 API 호출 실패:', error);
-		throw error;
-	}
+	const response=await api.patch<StoreApi>(`/users/${userId}/gifticons/${gifticonId}/use`)
+	return response.data
 }
 
 const storeApi={
