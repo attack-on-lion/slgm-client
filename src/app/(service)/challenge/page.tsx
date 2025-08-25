@@ -99,22 +99,6 @@ export default function ChallengePage() {
         </div>
       </header>
 
-      {selectedDays && recommendations.length > 0 && (
-        <section className="px-5 mt-4">
-          <div className="bg-[#DDF6F2] rounded-2xl p-6 text-center">
-            <h2 className="text-[20px] font-bold text-slate-800 mb-2">
-              {recommendations[0].categories} 카테고리
-            </h2>
-            <p className="text-[16px] text-slate-700 mb-4">
-              &ldquo;{getChallengeTypeKorean(recommendations[0].challengeType)}&rdquo; 챌린지
-            </p>
-            <p className="text-[14px] text-slate-600">
-              {selectedDays}일 동안 진행되는 챌린지입니다
-            </p>
-          </div>
-        </section>
-      )}
-
       <section className="bg-[#DDF6F2] px-5 py-6 mx-5 mt-4 rounded-2xl">
         <div className="flex items-start justify-between">
           <div className="flex-1">
