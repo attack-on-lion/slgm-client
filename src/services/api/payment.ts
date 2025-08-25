@@ -54,7 +54,7 @@ async function getWeeklyExpenses(userId: number): Promise<WeeklyExpenseResponse>
 // 월간 TOP3 카테고리 조회
 async function getMonthlyTop3(userId: number): Promise<MonthlyTop3Response> {
   try {
-    const response = await api.get(`/payments/${userId}/monthly/top3`);
+    const response = await api.get(`/payments/${userId}/monthly-top3`);
     return response.data as MonthlyTop3Response;
   } catch (error) {
     console.error('월간 TOP3 조회 실패:', error);
@@ -65,7 +65,7 @@ async function getMonthlyTop3(userId: number): Promise<MonthlyTop3Response> {
 // 전월 대비 지출 상승폭 top4 조회
 async function getMonthlyComparison(userId: number, selectedMonth: number): Promise<MonthlyComparisonResponse> {
   try {
-    const response = await api.get(`/payments/${userId}/monthly/comparison?month=${selectedMonth}`);
+    const response = await api.get(`/payments/${userId}/insights/rise?month=${selectedMonth}`);
     return response.data as MonthlyComparisonResponse;
   } catch (error) {
     console.error('전월 대비 비교 조회 실패:', error);

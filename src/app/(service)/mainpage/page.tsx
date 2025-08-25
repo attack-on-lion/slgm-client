@@ -6,6 +6,7 @@ import ServiceNavigator from "@/components/molecule/(service)/Navigator";
 import paymentApi from "@/services/api/payment";
 import { PaymentItem } from "@/interfaces/Payment";
 import useSign from "@/hooks/useSign";
+import Image from "next/image";
 
 export default function MainPage() {
   const router = useRouter();
@@ -80,7 +81,7 @@ export default function MainPage() {
         </div>
 
         <div className="mt-6 flex justify-center">
-          <img src="/squirrel.svg" alt="다람쥐" className="w-[197px] h-[198px]" />
+          <Image src="/squirrel.svg" alt="다람쥐" className="w-[197px] h-[198px]" width={197} height={198} />
         </div>
 
         <div className="mt-5">

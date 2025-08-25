@@ -159,12 +159,12 @@ export default function AnalysisPage() {
               <div className="flex items-center justify-center py-4">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#42D2B8]"></div>
               </div>
-            ) : monthlyComparisonData && monthlyComparisonData.topCategories.length > 0 ? (
+            ) : (monthlyComparisonData?.items?.length || 0) > 0 ? (
               <div className="flex items-end justify-between h-32">
-                {monthlyComparisonData.topCategories.map((category, index) => {
-                  const maxAmount = Math.max(...monthlyComparisonData.topCategories.map(c => c.currentMonthAmount));
-                  const currentHeight = (category.currentMonthAmount / maxAmount) * 100;
-                  const previousHeight = (category.previousMonthAmount / maxAmount) * 100;
+                {monthlyComparisonData?.items?.map((category, index) => {
+                  const maxAmount = Math.max(...(monthlyComparisonData?.items?.map(c => c.totalCurrent) || []));
+                  const currentHeight = (category.totalCurrent / maxAmount) * 100;
+                  const previousHeight = (category.totalPrevious / maxAmount) * 100;
                   
                   return (
                     <div key={category.rank} className="flex flex-col items-center">
@@ -194,7 +194,7 @@ export default function AnalysisPage() {
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#42D2B8]"></div>
               </div>
-            ) : weeklyData ? (
+            ) : weeklyData?.days ? (
               <div className="h-48 relative">
                 {/* 차트 영역 */}
                 <div className="h-40 relative mb-2">

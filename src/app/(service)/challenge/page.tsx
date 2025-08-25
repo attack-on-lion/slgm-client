@@ -6,6 +6,7 @@ import challengeApi from "@/services/api/challenge";
 import { CompletedChallenge, Recommendation } from "@/interfaces/Challenge";
 import { userApi } from "@/services/api/user";
 import { UserProfile } from "@/interfaces/User";
+import Image from "next/image";
 
 export default function ChallengePage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function ChallengePage() {
             ]
           }),
           challengeApi.getAvailableChallenges(),
-          userApi.getUserProfile("1")
+          userApi.getUserProfile(1)
         ]);
         
         setCompletedChallenges(completed);
@@ -98,7 +99,7 @@ export default function ChallengePage() {
         <section className="px-5 mt-4">
           <div className="bg-[#DDF6F2] rounded-2xl p-6 text-center">
             <h2 className="text-[20px] font-bold text-slate-800 mb-2">
-              "{recommendations[0].categories}" 카테고리
+              {recommendations[0].categories} 카테고리
             </h2>
             <p className="text-[16px] text-slate-700 mb-4">
               {recommendations[0].challengeType === 'pay_not' ? '"안쓰기"' :
@@ -127,10 +128,12 @@ export default function ChallengePage() {
           </div>
           
           <div className="flex-shrink-0 ml-2 self-end -mb-2">
-            <img 
+            <Image 
               src="/squirrel.svg" 
               alt="다람쥐 캐릭터" 
               className="w-20 h-20 object-contain"
+              width={80}
+              height={80}
             />
           </div>
         </div>
@@ -148,8 +151,8 @@ export default function ChallengePage() {
             {recommendations.map((challenge, index) => (
               <div key={index} className="min-w-[280px] bg-[#DDF6F2] border-2 border-[#42D2B8] rounded-2xl shadow-sm p-5 flex flex-col relative min-h-[320px]">
                 <h4 className="text-[22px] font-bold text-[#006D6F] mb-4 line-clamp-2 text-center">
-                  "{Array.isArray(challenge.categories) ? challenge.categories.join(' ') : challenge.categories} {challenge.challengeType === 'pay_not' ? '안쓰기' :
-                   challenge.challengeType === 'pay_less' ? '줄이기' : '모으기'}"
+                  {Array.isArray(challenge.categories) ? challenge.categories.join(' ') : challenge.categories} {challenge.challengeType === 'pay_not' ? '안쓰기' :
+                   challenge.challengeType === 'pay_less' ? '줄이기' : '모으기'}
                 </h4>
                 
                 <div className="flex-1 space-y-4 mb-4">
@@ -166,10 +169,12 @@ export default function ChallengePage() {
                 </div>
                 
                 <div className="flex justify-center mb-4">
-                  <img 
+                  <Image 
                     src="/squirrel.svg" 
                     alt="다람쥐 캐릭터" 
                     className="w-28 h-28 object-contain"
+                    width={112}
+                    height={112}
                   />
                 </div>
                 
