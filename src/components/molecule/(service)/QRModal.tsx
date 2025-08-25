@@ -13,6 +13,8 @@ interface QRModalProps {
     gifticonName: string;
     gifticonPrice: number;
     imageUrl: string;
+    name?: string; // Added for consistency with other fields
+    price?: number; // Added for consistency with other fields
   };
 }
 
@@ -64,7 +66,7 @@ export default function QRModal({
               {gifticon.imageUrl ? (
                 <Image 
                   src={gifticon.imageUrl} 
-                  alt={gifticon.gifticonName}
+                  alt={gifticon.gifticonName || gifticon.name || '기프티콘'}
                   className="w-[60px] h-[60px] object-contain"
                   width={60}
                   height={60}
@@ -75,10 +77,10 @@ export default function QRModal({
               )}
             </div>
             <p className="text-[16px] font-medium text-text mb-[8px]">
-              {gifticon.gifticonName}
+              {gifticon.gifticonName || gifticon.name || '기프티콘'}
             </p>
             <p className="text-[14px] text-gray-600">
-              {gifticon.gifticonPrice.toLocaleString()}원
+              {(gifticon.gifticonPrice || gifticon.price || 0).toLocaleString()}원
             </p>
           </div>
 
