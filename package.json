@@ -14,8 +14,10 @@
     "fast-jsx": "^0.0.26",
     "mysql2-wizard": "^2.0.7",
     "next": "15.4.5",
+    "qrcode": "^1.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-qr-code": "^2.0.18",
     "type-wizard": "^1.0.19"
   },
   "devDependencies": {
