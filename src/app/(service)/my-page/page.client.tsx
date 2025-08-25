@@ -54,8 +54,6 @@ export default function Client(){
 		<ServiceHeader title="마이페이지" option={{isBack:true}} />
 		<div className={cn(body)}>
 			<MyPageTemplate.Point 
-				howMuchChallenge={10} 
-				point={1000} 
 				button={<button onClick={() => setIsDetail(!isDetail)}>자세히 보기</button>} 
 			/>
 			<MyPageTemplate.Character character={userCharacterData?.items?.[0] || defaultCharacter} />
