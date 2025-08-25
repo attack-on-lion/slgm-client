@@ -33,6 +33,12 @@ export default function QRModal({
     }
   }, [isOpen, gifticon]);
 
+  useEffect(() => {
+    if (isOpen && gifticon && userId) {
+      startPolling();
+    }
+  }, [isOpen, gifticon, userId]);
+
   const generateQRCode = async () => {
     setIsLoading(true);
     try {
@@ -40,7 +46,7 @@ export default function QRModal({
       const code = `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`;
       
       // QR 코드에 포함할 웹페이지 URL 생성 (userId 포함)
-      const qrUrl = `${window.location.origin}/api/qr-scan?code=${code}&gifticonId=${gifticon.id}&userId=${userId || 1}`;
+      const qrUrl = `${window.location.origin}/api/qr-scan?gifticonId=${gifticon.id}&userId=${userId || 1}`;
       
       setQrData(qrUrl);
     } catch (error) {
@@ -49,6 +55,33 @@ export default function QRModal({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const startPolling = () => {
+    const pollInterval = setInterval(async () => {
+      try {
+        // 쿠폰 데이터 조회
+        const response = await fetch(`/api/server/users/${userId}/gifticons`);
+        if (response.ok) {
+          const data = await response.json();
+          const targetGifticon = data.ownedGifticonList.find((item: any) => item.gifticon_id === gifticon.id);
+          
+          if (targetGifticon && targetGifticon.usedAt !== null) {
+            // 사용 완료됨 - 바로 success 페이지로 이동
+            clearInterval(pollInterval);
+            const code = qrData.split('&')[0].split('=')[1];
+            window.location.href = `/payment/success?gifticonId=${gifticon.id}&userId=${userId}`;
+          }
+        }
+      } catch (error) {
+        console.error('Polling 오류:', error);
+      }
+    }, 4000); // 2초마다 체크
+
+    // 5분 후 타임아웃
+    setTimeout(() => {
+      clearInterval(pollInterval);
+    }, 300000);
   };
 
   if (!isOpen) return null;

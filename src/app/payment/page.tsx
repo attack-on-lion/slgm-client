@@ -42,7 +42,7 @@ export default function PaymentPage() {
         
         // 3초 후 성공 페이지로 리다이렉트 (파라미터 포함)
         setTimeout(() => {
-          const successUrl = `/payment/success?code=${code}&gifticonId=${gifticonId}`;
+          const successUrl = `/payment/success?gifticonId=${gifticonId}`;
           window.location.href = successUrl;
         }, 3000);
       } else {

@@ -4,12 +4,6 @@ import { cn } from "fast-jsx/util";
 
 export default function PaymentSuccessPage(){
 	const router = useRouter();
-	const searchParams = useSearchParams();
-	
-	// searchParams에서 직접 값을 가져오기
-	const code = searchParams?.get('code');
-	const gifticonId = searchParams?.get('gifticonId');
-	const userId = searchParams?.get('userId');
 
 	const container = {
 		display: 'flex flex-col items-center justify-center',
@@ -69,16 +63,6 @@ export default function PaymentSuccessPage(){
 					<br />
 					즐거운 시간 보내세요!
 				</p>
-
-				{/* 디버깅용 정보 (개발 환경에서만 표시) */}
-				{process.env.NODE_ENV === 'development' && (
-					<div className="text-xs text-gray-400 mt-4 p-2 bg-gray-50 rounded">
-						<div>Code: {code}</div>
-						<div>Gifticon ID: {gifticonId}</div>
-						<div>User ID: {userId}</div>
-					</div>
-				)}
-
 				<button 
 					onClick={() => {
 						console.log('메인으로 이동 버튼 클릭');
