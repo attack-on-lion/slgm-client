@@ -4,6 +4,7 @@ import ServiceHeader from "@/components/molecule/(service)/Header";
 import MyCouponButton from "@/components/molecule/(service)/MyCoupon.button";
 import StoreTemplate from "@/components/template/(service)/Store";
 import PurchaseModal from "@/components/molecule/(service)/PurchaseModal";
+import BrandCouponModal from "@/components/molecule/(service)/BrandCouponModal";
 import { cn } from "fast-jsx/util";
 import { useQuery } from "@tanstack/react-query";
 import storeApi from "@/services/api/store";
@@ -24,6 +25,10 @@ export default function Client(){
 	const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<any>(null);
 	const [isPurchasing, setIsPurchasing] = useState(false);
+
+	// 브랜드 쿠폰 모달 상태
+	const [isBrandCouponModalOpen, setIsBrandCouponModalOpen] = useState(false);
+	const [selectedBrand, setSelectedBrand] = useState<any>(null);
 
 	// API 데이터 가져오기
 	const { data: gifticonData, isLoading: gifticonLoading } = useQuery({
@@ -63,6 +68,12 @@ export default function Client(){
 			originalData: item
 		});
 		setIsPurchaseModalOpen(true);
+	};
+
+	// 브랜드 클릭 핸들러
+	const handleBrandClick = (brand: any) => {
+		setSelectedBrand(brand);
+		setIsBrandCouponModalOpen(true);
 	};
 
 	// 구매 확인 핸들러
@@ -114,7 +125,12 @@ export default function Client(){
 		<div className={cn(body)}>
 			<StoreTemplate.Recommend items={items} onItemClick={handleItemClick}/>
 		</div>
-		<StoreTemplate.OverView items={items} brandItems={brandItems} onItemClick={handleItemClick}/>
+		<StoreTemplate.OverView 
+			items={items} 
+			brandItems={brandItems} 
+			onItemClick={handleItemClick}
+			onBrandClick={handleBrandClick}
+		/>
 
 		{/* 구매 모달 */}
 		{selectedItem && (
@@ -128,6 +144,18 @@ export default function Client(){
 				item={selectedItem}
 				userPoint={userData?.point || 0}
 				isLoading={isPurchasing}
+			/>
+		)}
+
+		{/* 브랜드 쿠폰 모달 */}
+		{selectedBrand && (
+			<BrandCouponModal
+				isOpen={isBrandCouponModalOpen}
+				onClose={() => {
+					setIsBrandCouponModalOpen(false);
+					setSelectedBrand(null);
+				}}
+				brand={selectedBrand}
 			/>
 		)}
 	</div>

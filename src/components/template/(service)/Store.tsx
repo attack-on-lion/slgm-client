@@ -18,7 +18,7 @@ function Recommend({items, onItemClick}:{items:Item[], onItemClick?: (item: Item
 }
 
 type StoreBrand="상품권" | "브랜드"
-function OverView({items, brandItems, onItemClick}:{items:Item[], brandItems:StoreBrandApi['stores'], onItemClick?: (item: Item) => void}){
+function OverView({items, brandItems, onItemClick, onBrandClick}:{items:Item[], brandItems:StoreBrandApi['stores'], onItemClick?: (item: Item) => void, onBrandClick?: (brand: StoreBrandApi['stores'][0]) => void}){
 	const [selectedStoreType,setSelectedStoreType]=useState<StoreType>('전체');
 	const [selectedStoreBrand,setSelectedStoreBrand]=useState<StoreBrand>('상품권');
 	const container={
@@ -71,10 +71,14 @@ function OverView({items, brandItems, onItemClick}:{items:Item[], brandItems:Sto
 			</>
 		)}
 		{selectedStoreBrand === '브랜드' && (
-			<div className="grid grid-cols-2 gap-x-[20px] w-full min-h-[256px] py-[20px] overflow-x-scroll">
+			<div className="grid grid-cols-2 gap-[20px] w-full min-h-[256px] py-[20px] overflow-x-scroll">
 				{brandItems.map((brand, index)=>(
 					<div key={index}>
-						<BrandCard brand={brand} option={{isBig:true}} />
+						<BrandCard 
+							brand={brand} 
+							option={{isBig:true}} 
+							onClick={() => onBrandClick?.(brand)}
+						/>
 					</div>
 				))}
 			</div>

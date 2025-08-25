@@ -10,6 +10,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cn } from "fast-jsx/util";
 import { useEffect, useState } from "react";
 import Loading from "@/components/template/Loading";
+import useSign from "@/hooks/useSign";
 
 const ownedCharacters=[
 	'다람쥐',
@@ -19,12 +20,12 @@ const ownedCharacters=[
 ]
 
 export default function Client(){
+	const { userId, userData } = useSign();
 	const [items, setItems]=useState<ItemRender[]>([])
 	const [selectedItem, setSelectedItem] = useState<ItemRender | null>(null)
 	const [selectedCharacter, setSelectedCharacter] = useState<any>(null)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [modalType, setModalType] = useState<'character' | 'item'>('item')
-	const [userPoint, setUserPoint] = useState(10000) // 임시 포인트
 	
 	const queryClient = useQueryClient()
 	
@@ -33,8 +34,9 @@ export default function Client(){
 		queryFn:()=>itemApi.getItem(),
 	});
 	const {data:itemsDataByUserId, isSuccess:itemsSuccessByUserId}=useQuery({
-		queryKey:['itemsByUserId'],
-		queryFn:()=>itemApi.getItemByUserId(1),
+		queryKey:['itemsByUserId', userId],
+		queryFn:()=>itemApi.getItemByUserId(userId || 1),
+		enabled: !!userId,
 	});
 	
 	const {data:charactersData, isSuccess:charactersSuccess}=useQuery({
@@ -43,20 +45,19 @@ export default function Client(){
 	});
 	
 	const {data:charactersDataByUserId, isSuccess:charactersSuccessByUserId}=useQuery({
-		queryKey:['charactersByUserId'],
-		queryFn:()=>characterApi.getCharacterByUserId(1),
+		queryKey:['charactersByUserId', userId],
+		queryFn:()=>characterApi.getCharacterByUserId(userId || 1),
+		enabled: !!userId,
 	});
 	
 	const purchaseItemMutation = useMutation({
 		mutationFn: (item: ItemRender) => 
-			itemApi.buyItem(1, item.id, item.price),
+			itemApi.buyItem(userId || 1, item.id, item.price),
 		onSuccess: () => {
 			// 구매 성공 시 캐시 무효화
-			queryClient.invalidateQueries({ queryKey: ['itemsByUserId'] })
+			queryClient.invalidateQueries({ queryKey: ['itemsByUserId', userId] })
 			setIsModalOpen(false)
 			setSelectedItem(null)
-			// 포인트 차감
-			setUserPoint(prev => prev - (selectedItem?.price || 0))
 		},
 		onError: (error) => {
 			console.error('아이템 구매 실패:', error)
@@ -66,14 +67,12 @@ export default function Client(){
 	
 	const purchaseCharacterMutation = useMutation({
 		mutationFn: (character: any) => 
-			characterApi.buyCharacter(1, character.id, character.price),
+			characterApi.buyCharacter(userId || 1, character.id, character.price),
 		onSuccess: () => {
 			// 구매 성공 시 캐시 무효화
-			queryClient.invalidateQueries({ queryKey: ['charactersByUserId'] })
+			queryClient.invalidateQueries({ queryKey: ['charactersByUserId', userId] })
 			setIsModalOpen(false)
 			setSelectedCharacter(null)
-			// 포인트 차감
-			setUserPoint(prev => prev - (selectedCharacter?.price || 0))
 		},
 		onError: (error) => {
 			console.error('캐릭터 구매 실패:', error)
@@ -181,7 +180,7 @@ export default function Client(){
 				}
 			/>
 			<MyPageCharacterTemplate.CharacterList 
-				point={userPoint} 
+				point={userData?.point || 0} 
 				characters={characters.map((character)=>({
 					id:character.id,
 					name:character.name,
@@ -193,17 +192,17 @@ export default function Client(){
 			/>
 			<MyPageCharacterTemplate.ItemList 
 				items={
-					items.map((item,index)=>({
-						id:index,
+					items.map((item)=>({
+						id:item.id,
 						name:item.name,
-						imageUrl:itemMockImages[index % itemMockImages.length],
+						imageUrl:itemMockImages[item.id % itemMockImages.length],
 						price:item.price,
 						code:item.code,
 						isHave:item.isHave,
 					}))
 				}
 				onItemClick={handleItemClick}
-				userPoint={userPoint}
+				userPoint={userData?.point || 0}
 			/>
 		</div>
 		
@@ -231,7 +230,7 @@ export default function Client(){
 				imageUrl: '',
 				type: 'item'
 			}}
-			userPoint={userPoint}
+			userPoint={userData?.point || 0}
 			isLoading={modalType === 'item' ? purchaseItemMutation.isPending : purchaseCharacterMutation.isPending}
 		/>
 	</div>
