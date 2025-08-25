@@ -3,6 +3,7 @@ import { cn } from "fast-jsx/util";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
+import { useRouter } from "next/navigation";
 
 interface QRModalProps {
   isOpen: boolean;
@@ -20,8 +21,11 @@ export default function QRModal({
   onClose,
   gifticon
 }: QRModalProps) {
+  const router = useRouter();
   const [qrData, setQrData] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [uniqueCode, setUniqueCode] = useState<string>('');
 
   useEffect(() => {
     if (isOpen && gifticon) {
@@ -29,16 +33,41 @@ export default function QRModal({
     }
   }, [isOpen, gifticon]);
 
+  useEffect(() => {
+    if (isWaiting && uniqueCode) {
+      // 서버에서 신호 대기 (폴링)
+      const pollInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`/api/payments/status?code=${uniqueCode}`);
+          if (response.ok) {
+            const result = await response.json();
+            if (result.status === 'completed') {
+              clearInterval(pollInterval);
+              // 성공 페이지로 리다이렉트
+              router.push('/payment/success');
+            }
+          }
+        } catch (error) {
+          console.error('상태 확인 실패:', error);
+        }
+      }, 2000); // 2초마다 확인
+
+      return () => clearInterval(pollInterval);
+    }
+  }, [isWaiting, uniqueCode, router]);
+
   const generateQRCode = async () => {
     setIsLoading(true);
     try {
       // QR 코드에 포함할 고유 코드 생성
-      const uniqueCode = `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`;
+      const code = `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`;
+      setUniqueCode(code);
       
-      // QR 코드에 포함할 URL 생성 (실제 도메인으로 변경 필요)
-      const qrUrl = `${window.location.origin}/api/qr-scan?code=${uniqueCode}&gifticonId=${gifticon.id}`;
+      // QR 코드에 포함할 웹페이지 URL 생성
+      const qrUrl = `${window.location.origin}/payment?code=${code}&gifticonId=${gifticon.id}`;
       
       setQrData(qrUrl);
+      setIsWaiting(true);
     } catch (error) {
       console.error('QR 코드 생성 실패:', error);
       setQrData('QR 코드 생성 실패');
@@ -105,8 +134,14 @@ export default function QRModal({
                     지점에서 QR 코드를 스캔해주세요
                   </p>
                   <p className="text-[8px] text-gray-300 mt-1">
-                    코드: {qrData.split('code=')[1]?.split('&')[0] || 'N/A'}
+                    코드: {uniqueCode || 'N/A'}
                   </p>
+                  {isWaiting && (
+                    <div className="mt-2 flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#42D2B8] mr-2"></div>
+                      <p className="text-[10px] text-[#42D2B8]">사용 대기 중...</p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
