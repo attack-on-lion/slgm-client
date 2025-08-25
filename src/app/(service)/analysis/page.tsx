@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import paymentApi from "@/services/api/payment";
 import aiSolutionApi from "@/services/api/aiSolution";
 import { WeeklyExpenseResponse, MonthlyTop3Response, MonthlyComparisonResponse } from "@/interfaces/Payment";
@@ -69,6 +69,29 @@ export default function AnalysisPage() {
           paymentApi.getMonthlyComparison(userId, selectedMonth)
         ]);
         
+        console.log('=== API 호출 결과 ===');
+        console.log('선택된 월:', selectedMonth);
+        console.log('API 응답 데이터:', {
+          selectedMonth,
+          weeklyData: weeklyResponse,
+          top3Data: top3Response,
+          comparisonData: comparisonResponse
+        });
+        
+        if (weeklyResponse) {
+          console.log('주간 데이터 상세:', {
+            days: weeklyResponse.days,
+            daysLength: weeklyResponse.days?.length,
+            firstDay: weeklyResponse.days?.[0],
+            allDays: weeklyResponse.days?.map(d => ({
+              date: d.date,
+              dayOfWeekKo: d.dayOfWeekKo,
+              totalExpense: d.totalExpense,
+              transactionCount: d.transactionCount
+            }))
+          });
+        }
+        
         setWeeklyData(weeklyResponse);
         setTop3Data(top3Response);
         setMonthlyComparisonData(comparisonResponse);
@@ -135,14 +158,80 @@ export default function AnalysisPage() {
 
   const topExpenses = getTopExpenses();
 
+  const chartData = useMemo(() => {
+    if (!weeklyData?.days || weeklyData.days.length === 0) {
+      console.log('주간 데이터 없음:', weeklyData);
+      return [];
+    }
+    
+    console.log('주간 데이터 원본:', weeklyData.days);
+    
+    const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
+    const data = weekDays.map(day => {
+      const existingDay = weeklyData.days.find(d => d.dayOfWeekKo === day);
+      console.log(`${day}요일 데이터 찾기:`, {
+        찾는요일: day,
+        찾은데이터: existingDay,
+        전체데이터: weeklyData.days?.map(d => `${d.dayOfWeekKo}: ${d.totalExpense}원`)
+      });
+      
+      if (existingDay) {
+        const result = {
+          name: day,
+          소비액: existingDay.totalExpense || 0,
+          거래횟수: existingDay.transactionCount || 0,
+          isWeekend: day === '토' || day === '일'
+        };
+        console.log(`${day}요일 결과:`, result);
+        return result;
+      } else {
+        // API에 해당 요일 데이터가 없으면 0으로 표시
+        const result = {
+          name: day,
+          소비액: 0,
+          거래횟수: 0,
+          isWeekend: day === '토' || day === '일'
+        };
+        console.log(`${day}요일 결과 (데이터 없음):`, result);
+        return result;
+      }
+    });
+    
+    console.log('생성된 차트 데이터:', data);
+    return data;
+  }, [weeklyData]);
+
+  const comparisonChartData = useMemo(() => {
+    if (!monthlyComparisonData?.items || monthlyComparisonData.items.length === 0) return [];
+    
+    const maxCategories = 4;
+    const items = [...monthlyComparisonData.items];
+    
+    while (items.length < maxCategories) {
+      const dummyIndex = items.length;
+      const categories = ['CAFE', 'FOOD', 'TRANSPORTATION', 'SHOPPING', 'EDUCATION', 'ENTERTAINMENT', 'UTILITY', 'OTHERS'];
+      const randomCategory = categories[dummyIndex % categories.length];
+      items.push({
+        rank: dummyIndex + 1,
+        categoryId: 999 + dummyIndex,
+        categoryName: randomCategory,
+        totalCurrent: 0,
+        totalPrevious: 0
+      });
+    }
+    
+    return items.slice(0, maxCategories);
+  }, [monthlyComparisonData]);
+
   const changeMonth = (direction: 'prev' | 'next') => {
+    console.log('월 변경 시작:', { direction, 현재월: selectedMonth });
+    
     setSelectedMonth(prev => {
       const newMonth = direction === 'prev' 
         ? prev === 1 ? 12 : prev - 1
         : prev === 12 ? 1 : prev + 1;
       
-      setLoading(true);
-      
+      console.log('새로운 월 설정:', { 이전월: prev, 새로운월: newMonth });
       return newMonth;
     });
   };
@@ -319,64 +408,21 @@ export default function AnalysisPage() {
               <div className="flex items-center justify-center py-4">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#42D2B8]"></div>
               </div>
-            ) : monthlyComparisonData?.items && monthlyComparisonData.items.length > 0 ? (
+            ) : comparisonChartData.length > 0 ? (
               <div className="w-full overflow-x-auto">
                 <div className="flex items-end justify-center gap-4 h-32 min-w-max px-4">
-                  {(() => {
-                    const maxCategories = 4;
-                    const items = [...monthlyComparisonData.items];
-                    
-                    while (items.length < maxCategories) {
-                      const dummyIndex = items.length;
-                      const randomCategory = ['CAFE', 'FOOD', 'TRANSPORTATION', 'SHOPPING', 'EDUCATION', 'ENTERTAINMENT', 'UTILITY', 'OTHERS'][Math.floor(Math.random() * 8)];
-                      items.push({
-                        rank: dummyIndex + 1,
-                        categoryId: 999 + dummyIndex,
-                        categoryName: randomCategory,
-                        totalCurrent: Math.random() * 100000 + 50000,
-                        totalPrevious: Math.random() * 80000 + 40000
-                      });
-                    }
-                    
-                    return items.slice(0, maxCategories).map((category, index) => {
-                      try {
-                        const validItems = items.filter(item => 
-                          typeof item.totalCurrent === 'number' && 
-                          typeof item.totalPrevious === 'number' &&
-                          !isNaN(item.totalCurrent) && 
-                          !isNaN(item.totalPrevious) &&
-                          item.totalCurrent >= 0 && 
-                          item.totalPrevious >= 0
-                        );
-                        
-                        if (validItems.length === 0) {
-                          return (
-                            <div key={category.rank} className="flex flex-col items-center flex-shrink-0">
-                              <div className="w-3 h-4 bg-gray-300 rounded-t mb-2"></div>
-                              <span className="text-[12px] text-slate-600 text-center max-w-[60px] break-words">
-                                {getCategoryKorean(category.categoryName)}
-                              </span>
-                            </div>
-                          );
-                        }
-                        
-                        const maxAmount = Math.max(...validItems.map(c => c.totalCurrent));
-                        const currentHeight = maxAmount > 0 ? (category.totalCurrent / maxAmount) * 100 : 0;
-                        const previousHeight = maxAmount > 0 ? (category.totalPrevious / maxAmount) * 100 : 0;
-                        
-                        return (
-                          <div key={category.rank} className="flex flex-col items-center flex-shrink-0">
-                            <div className="flex items-end gap-1 mb-2">
-                              <div className="w-3 bg-[#C9FFF5] rounded-t" style={{ height: `${previousHeight}px` }}></div>
-                              <div className="w-3 bg-[#42D2B8] rounded-t" style={{ height: `${currentHeight}px` }}></div>
-                            </div>
-                            <span className="text-[12px] text-slate-600 text-center max-w-[60px] break-words">
-                              {getCategoryKorean(category.categoryName)}
-                            </span>
-                          </div>
-                        );
-                      } catch (error) {
-                        console.error('차트 데이터 처리 오류:', error);
+                  {comparisonChartData.map((category, index) => {
+                    try {
+                      const validItems = comparisonChartData.filter(item => 
+                        typeof item.totalCurrent === 'number' && 
+                        typeof item.totalPrevious === 'number' &&
+                        !isNaN(item.totalCurrent) && 
+                        !isNaN(item.totalPrevious) &&
+                        item.totalCurrent >= 0 && 
+                        item.totalPrevious >= 0
+                      );
+                      
+                      if (validItems.length === 0) {
                         return (
                           <div key={category.rank} className="flex flex-col items-center flex-shrink-0">
                             <div className="w-3 h-4 bg-gray-300 rounded-t mb-2"></div>
@@ -386,8 +432,34 @@ export default function AnalysisPage() {
                           </div>
                         );
                       }
-                    });
-                  })()}
+                      
+                      const maxAmount = Math.max(...validItems.map(c => c.totalCurrent));
+                      const currentHeight = maxAmount > 0 ? (category.totalCurrent / maxAmount) * 100 : 0;
+                      const previousHeight = maxAmount > 0 ? (category.totalPrevious / maxAmount) * 100 : 0;
+                      
+                      return (
+                        <div key={category.rank} className="flex flex-col items-center flex-shrink-0">
+                          <div className="flex items-end gap-1 mb-2">
+                            <div className="w-3 bg-[#C9FFF5] rounded-t" style={{ height: `${previousHeight}px` }}></div>
+                            <div className="w-3 bg-[#42D2B8] rounded-t" style={{ height: `${currentHeight}px` }}></div>
+                          </div>
+                          <span className="text-[12px] text-slate-600 text-center max-w-[60px] break-words">
+                            {getCategoryKorean(category.categoryName)}
+                          </span>
+                        </div>
+                      );
+                    } catch (error) {
+                      console.error('차트 데이터 처리 오류:', error);
+                      return (
+                        <div key={category.rank} className="flex flex-col items-center flex-shrink-0">
+                          <div className="w-3 h-4 bg-gray-300 rounded-t mb-2"></div>
+                          <span className="text-[12px] text-slate-600 text-center max-w-[60px] break-words">
+                            {getCategoryKorean(category.categoryName)}
+                          </span>
+                        </div>
+                      );
+                    }
+                  })}
                 </div>
               </div>
             ) : (
@@ -449,32 +521,11 @@ export default function AnalysisPage() {
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#42D2B8]"></div>
               </div>
-            ) : weeklyData?.days && weeklyData.days.length > 0 ? (
+            ) : chartData.length > 0 ? (
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
-                    data={(() => {
-                      const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
-                      const chartData = weekDays.map(day => {
-                        const existingDay = weeklyData.days.find(d => d.dayOfWeekKo === day);
-                        if (existingDay) {
-                          return {
-                            name: day,
-                            소비액: existingDay.totalExpense,
-                            거래횟수: existingDay.transactionCount,
-                            isWeekend: day === '토' || day === '일'
-                          };
-                        } else {
-                          return {
-                            name: day,
-                            소비액: Math.random() * 100000 + 50000,
-                            거래횟수: Math.floor(Math.random() * 5) + 1,
-                            isWeekend: day === '토' || day === '일'
-                          };
-                        }
-                      });
-                      return chartData;
-                    })()}
+                    data={chartData}
                     margin={{
                       top: 20,
                       right: 10,
@@ -546,7 +597,8 @@ export default function AnalysisPage() {
               </div>
             ) : (
               <div className="text-center py-8 text-slate-500">
-                <p>일별 평균 소비 데이터가 없습니다</p>
+                <p className="mb-2">일별 평균 소비 데이터가 없습니다</p>
+                <p className="text-[12px] text-slate-400">해당 월의 소비 내역이 없거나 데이터를 불러올 수 없습니다.</p>
               </div>
             )}
           </div>

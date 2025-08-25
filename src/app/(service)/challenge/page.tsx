@@ -106,6 +106,23 @@ export default function ChallengePage() {
     setSelectedDays(null);
   };
 
+  const handleStartChallenge = async (challenge: any, isRecommendation: boolean = false) => {
+    try {
+      if (!userId) {
+        alert('로그인이 필요합니다.');
+        return;
+      }
+
+      // 단순히 챌린지 시작 알림만 표시
+      alert(`${challenge.challengeName || `${getCategoryKorean(challenge.categories)} ${getChallengeTypeKorean(challenge.challengeType)}`} 챌린지를 시작합니다!`);
+      
+      
+    } catch (error) {
+      console.error('챌린지 시작 실패:', error);
+      alert('챌린지 시작에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
   const handleClose = () => {
     router.back();
   };
@@ -190,7 +207,10 @@ export default function ChallengePage() {
                   />
                 </div>
                 
-                <button className="w-full bg-white border border-[#42D2B8] text-[#42D2B8] py-3 rounded-xl text-[14px] font-semibold hover:bg-[#DDF6F2] active:scale-95 transition-all mt-auto">
+                <button 
+                  onClick={() => handleStartChallenge(challenge, true)}
+                  className="w-full bg-white border border-[#42D2B8] text-[#42D2B8] py-3 rounded-xl text-[14px] font-semibold hover:bg-[#DDF6F2] active:scale-95 transition-all mt-auto"
+                >
                   시작하기
                 </button>
               </div>
@@ -253,7 +273,10 @@ export default function ChallengePage() {
                     <span className="text-[14px] font-bold text-[#42D2B8]">{returnPoint(challenge.challengeDays)}p</span>
                   </div>
                   
-                  <button className="w-full bg-white border border-slate-300 text-slate-800 py-2 rounded-lg text-[12px] font-medium hover:bg-slate-50 transition-colors">
+                  <button 
+                    onClick={() => handleStartChallenge(challenge)}
+                    className="w-full bg-white border border-slate-300 text-slate-800 py-2 rounded-lg text-[12px] font-medium hover:bg-slate-50 transition-colors"
+                  >
                     시작하기
                   </button>
                 </div>
