@@ -17,7 +17,7 @@ export default function Client(){
 	// API 데이터 가져오기
 	const { data: gifticonData, isLoading: gifticonLoading } = useQuery({
 		queryKey: ['gifticon'],
-		queryFn: () => storeApi.getGifticon(1), // userId는 임시로 1 사용
+		queryFn: () => storeApi.getGifticon() // userId는 임시로 1 사용
 	});
 
 	const { data: couponData, isLoading: couponLoading } = useQuery({

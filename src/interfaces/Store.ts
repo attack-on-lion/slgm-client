@@ -29,6 +29,23 @@ export interface StoreApi{
 	size: number,
 }
 
+interface StoreBrand{
+	storeId:number,
+	storeName:string,
+	logoUrl:string,
+	categoryId:number,
+	categoryName:string,
+}
+export interface StoreBrandApi{
+	stores: StoreBrand[],
+	nextCursor: {
+		lastStoreName: string,
+		lastId: number,
+	},
+	hasNext: boolean,
+	size: number,
+}
+
 export interface CouponApi{
 	AVAILABLE : Coupon[],
 	USED: Coupon[],

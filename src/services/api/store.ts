@@ -1,9 +1,24 @@
-import { CouponApi, StoreApi } from "@/interfaces/Store";
+import { CouponApi, StoreApi, StoreBrandApi } from "@/interfaces/Store";
 import http from "./config";
 
 const api=http.api()
 
-async function getGifticon(userId:number){
+async function getStore(){
+	const response=await api.get<StoreApi>(`/stores`)
+	return response.data
+}
+
+async function getGifticonsByStoreId(storeId:number){
+	const response=await api.get<StoreApi>(`/stores/${storeId}/gifticons`)
+	return response.data
+}
+
+async function getStoreBrand(){
+	const response=await api.get<StoreBrandApi>(`/stores`)
+	return response.data
+}
+
+async function getGifticon(){
 	const response=await api.get<StoreApi>(`/gifticons`)
 	return response.data
 }
@@ -14,6 +29,9 @@ async function getCoupon(userId:number){
 }
 
 const storeApi={
+	getStore,
+	getStoreBrand,
+	getGifticonsByStoreId,
 	getGifticon,
 	getCoupon,
 }
