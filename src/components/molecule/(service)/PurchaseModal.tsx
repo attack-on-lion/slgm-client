@@ -10,7 +10,8 @@ interface PurchaseModalProps {
     name: string;
     price: number;
     imageUrl: string;
-    type?: 'character' | 'item';
+    type?: 'character' | 'item' | 'gifticon';
+    storeName?: string;
   };
   userPoint: number;
   isLoading?: boolean;
@@ -28,12 +29,23 @@ export default function PurchaseModal({
 
   const canAfford = userPoint >= item.price;
 
+  const getTitle = () => {
+    switch (item.type) {
+      case 'character':
+        return '캐릭터 구매';
+      case 'gifticon':
+        return '기프티콘 구매';
+      default:
+        return '아이템 구매';
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-[16px] p-[24px] mx-[20px] w-full max-w-[320px]">
         <div className="text-center">
           <h3 className="text-[18px] font-bold text-text mb-[16px]">
-            {item.type === 'character' ? '캐릭터 구매' : '아이템 구매'}
+            {getTitle()}
           </h3>
           
           <div className="flex flex-col items-center mb-[24px]">
@@ -44,6 +56,11 @@ export default function PurchaseModal({
                 className="w-[60px] h-[60px] object-contain"
               />
             </div>
+            {item.storeName && (
+              <p className="text-[12px] text-gray-500 mb-[4px]">
+                {item.storeName}
+              </p>
+            )}
             <p className="text-[16px] font-medium text-text mb-[8px]">
               {item.name}
             </p>

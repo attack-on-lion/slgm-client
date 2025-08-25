@@ -5,17 +5,20 @@ import { Item, StoreType, storeTypes, StoreBrandApi } from "@/interfaces/Store";
 import { cn } from "fast-jsx/util";
 import { useState } from "react";
 
-function Recommend({items}:{items:Item[]}){
+function Recommend({items, onItemClick}:{items:Item[], onItemClick?: (item: Item) => void}){
 	return <Section title="추천 상품" option={{smallTitle:true,noPadding:true}}>
 		<div className="flex gap-x-[20px] w-full h-full bg-bg-color-2 px-[24px] py-[20px] overflow-x-scroll">
-			{items.map((item)=>(
-				<Card key={item.name} item={item} />
+			{items.map((item, index)=>(
+				<div key={index} onClick={() => onItemClick?.(item)} className="cursor-pointer">
+					<Card item={item} />
+				</div>
 			))}
 		</div>
 	</Section>
 }
+
 type StoreBrand="상품권" | "브랜드"
-function OverView({items, brandItems}:{items:Item[], brandItems:StoreBrandApi['stores']}){
+function OverView({items, brandItems, onItemClick}:{items:Item[], brandItems:StoreBrandApi['stores'], onItemClick?: (item: Item) => void}){
 	const [selectedStoreType,setSelectedStoreType]=useState<StoreType>('전체');
 	const [selectedStoreBrand,setSelectedStoreBrand]=useState<StoreBrand>('상품권');
 	const container={
@@ -59,16 +62,20 @@ function OverView({items, brandItems}:{items:Item[], brandItems:StoreBrandApi['s
 					))}
 				</div>
 				<div className="grid grid-cols-2 gap-x-[20px] w-full min-h-[256px] py-[20px] overflow-x-scroll">
-					{items.filter((item) => selectedStoreType === '전체' || item.storeType === selectedStoreType).map((item)=>(
-						<Card key={item.name} item={item} option={{isBig:true}} />
+					{items.filter((item) => selectedStoreType === '전체' || item.storeType === selectedStoreType).map((item, index)=>(
+						<div key={index} onClick={() => onItemClick?.(item)} className="cursor-pointer">
+							<Card item={item} option={{isBig:true}} />
+						</div>
 					))}
 				</div>
 			</>
 		)}
 		{selectedStoreBrand === '브랜드' && (
 			<div className="grid grid-cols-2 gap-x-[20px] w-full min-h-[256px] py-[20px] overflow-x-scroll">
-				{brandItems.map((brand)=>(
-					<BrandCard key={brand.storeId} brand={brand} option={{isBig:true}} />
+				{brandItems.map((brand, index)=>(
+					<div key={index}>
+						<BrandCard brand={brand} option={{isBig:true}} />
+					</div>
 				))}
 			</div>
 		)}

@@ -28,12 +28,18 @@ async function getCoupon(userId:number){
 	return response.data
 }
 
+async function purchaseGifticon(userId:number, gifticonId:number){
+	const response=await api.post<StoreApi>(`/users/${userId}/gifticons/${gifticonId}/purchase`)
+	return response.data
+}
+
 const storeApi={
 	getStore,
 	getStoreBrand,
 	getGifticonsByStoreId,
 	getGifticon,
 	getCoupon,
+	purchaseGifticon,
 }
 
 export default storeApi
