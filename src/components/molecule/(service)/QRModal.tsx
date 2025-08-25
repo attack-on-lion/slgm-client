@@ -46,7 +46,7 @@ export default function QRModal({
       const code = `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`;
       
       // QR 코드에 포함할 웹페이지 URL 생성 (userId 포함)
-      const qrUrl = `${window.location.origin}/api/qr-scan?gifticonId=${gifticon.id}&userId=${userId || 1}`;
+      const qrUrl = `${window.location.origin}/api/qr-scan?code=${code}&gifticonId=${gifticon.id}&userId=${userId || 1}`;
       
       setQrData(qrUrl);
     } catch (error) {
