@@ -39,8 +39,6 @@ export default function MyPageDetail({state,histories}:{state:State<boolean>,his
 	 <Section>
 		<div className="flex flex-col gap-y-[20px] pt-[69px]">
 			<ChallengeStatus
-				howMuchChallenge={10} 
-				point={1000} 
 				button={<MyCouponButton/>} 
 				version="v2"
 			/>

@@ -4,11 +4,9 @@ import { OnClick } from "fast-jsx/interface";
 import { cn } from "fast-jsx/util";
 import Image from "next/image";
 
-function Point({howMuchChallenge,point, button}:{howMuchChallenge:number,point:number, button:React.ReactNode}){
+function Point({ button }: { button: React.ReactNode }){
 	return <SectionCard title="포인트">
 		<ChallengeStatus 
-		howMuchChallenge={howMuchChallenge} 
-		point={point} 
 		button={button} 
 		version="v2"
 		/>

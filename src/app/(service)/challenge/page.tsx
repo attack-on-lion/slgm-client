@@ -3,9 +3,11 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import useSign from "@/hooks/useSign";
 
 export default function ChallengePage() {
   const router = useRouter();
+  const { userData } = useSign();
   
   const challengeData = [
     {
@@ -42,7 +44,9 @@ export default function ChallengePage() {
       <section className="bg-[#DDF6F2] px-5 py-6 mx-5 mt-4 rounded-2xl">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h2 className="text-[20px] font-bold text-slate-800 mb-2">안녕하세요 000님!</h2>
+            <h2 className="text-[20px] font-bold text-slate-800 mb-2">
+              안녕하세요 {userData?.name || '사용자'}님!
+            </h2>
             <p className="text-[16px] text-slate-700 mb-4">챌린지를 통해 절약해보세요!</p>
             <button 
               onClick={() => router.push("/challenge/regulations")}

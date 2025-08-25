@@ -47,8 +47,17 @@ export interface StoreBrandApi{
 }
 
 export interface CouponApi{
-	AVAILABLE : Coupon[],
-	USED: Coupon[],
+	size: number,
+	ownedGifticonList: 
+		{
+			id: number,
+			userId: number,
+			gifticonId: number,
+			gifticonName: string,
+			gifticonPrice: number,
+			imageUrl: string,
+			usedAt: string | null,
+			}[]
 }
 
 export interface Coupon{

@@ -1,6 +1,7 @@
 import Section from "@/components/atom/Section";
 import Card from "@/components/organism/(service)/ItemCard";
-import { Item, StoreType, storeTypes } from "@/interfaces/Store";
+import BrandCard from "@/components/organism/(service)/BrandCard";
+import { Item, StoreType, storeTypes, StoreBrandApi } from "@/interfaces/Store";
 import { cn } from "fast-jsx/util";
 import { useState } from "react";
 
@@ -14,7 +15,7 @@ function Recommend({items}:{items:Item[]}){
 	</Section>
 }
 type StoreBrand="상품권" | "브랜드"
-function OverView({items}:{items:Item[]}){
+function OverView({items, brandItems}:{items:Item[], brandItems:StoreBrandApi['stores']}){
 	const [selectedStoreType,setSelectedStoreType]=useState<StoreType>('전체');
 	const [selectedStoreBrand,setSelectedStoreBrand]=useState<StoreBrand>('상품권');
 	const container={
@@ -41,6 +42,7 @@ function OverView({items}:{items:Item[]}){
 		border: selectedStoreBrand===type?'border-text':'border-transparent',
 		style:'cursor-pointer',
 	})
+
 	return( <div className={cn(container)}>
 		<div className="flex justify-between shrink-0">
 			{[
@@ -49,16 +51,27 @@ function OverView({items}:{items:Item[]}){
 				<div key={type} className={cn(brandTab(type as StoreBrand))} onClick={()=>setSelectedStoreBrand(type as StoreBrand)}>{type}</div>
 			))}
 		</div>
-		<div className=" w-full flex gap-x-[10px] overflow-x-scroll">
-			{storeTypes.map((type)=>(
-				<div key={type} className={cn(tab(type))} onClick={()=>setSelectedStoreType(type)}>{type}</div>
-			))}
-		</div>
-		<div className="grid grid-cols-2 gap-x-[20px] w-full min-h-[256px] py-[20px] overflow-x-scroll">
-			{items.filter((item)=>selectedStoreType==='전체'||item.storeType===selectedStoreType).map((item)=>(
-				<Card key={item.name} item={item} option={{isBig:true}} />
-			))}
-		</div>
+		{selectedStoreBrand === '상품권' && (
+			<>
+				<div className=" w-full flex gap-x-[10px] overflow-x-scroll">
+					{storeTypes.map((type)=>(
+						<div key={type} className={cn(tab(type))} onClick={()=>setSelectedStoreType(type)}>{type}</div>
+					))}
+				</div>
+				<div className="grid grid-cols-2 gap-x-[20px] w-full min-h-[256px] py-[20px] overflow-x-scroll">
+					{items.filter((item) => selectedStoreType === '전체' || item.storeType === selectedStoreType).map((item)=>(
+						<Card key={item.name} item={item} option={{isBig:true}} />
+					))}
+				</div>
+			</>
+		)}
+		{selectedStoreBrand === '브랜드' && (
+			<div className="grid grid-cols-2 gap-x-[20px] w-full min-h-[256px] py-[20px] overflow-x-scroll">
+				{brandItems.map((brand)=>(
+					<BrandCard key={brand.storeId} brand={brand} option={{isBig:true}} />
+				))}
+			</div>
+		)}
 	</div>)
 }
 

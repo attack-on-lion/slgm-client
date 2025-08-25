@@ -1,6 +1,7 @@
 import { Item } from "@/interfaces/Store";
 import { cn } from "fast-jsx/util";
 import Image from "next/image";
+import { useState } from "react";
 
 export interface ItemCardProps{
 	item:Item,
@@ -12,6 +13,8 @@ export interface ItemCardProps{
 
 export default function Card({item, status, option}:ItemCardProps){
 	const {storeName, name, point, imageUrl}=item;
+	const [imageError, setImageError] = useState(false);
+	
 	const container={
 		position:'relative', 
 		display:'flex flex-col gap-y-[12px]',
@@ -23,9 +26,31 @@ export default function Card({item, status, option}:ItemCardProps){
 		border:'border-1 border-black/5',
 		background:'bg-white',
 	}
+
+	const handleImageError = () => {
+		setImageError(true);
+	};
+
 	return (<div className={cn(container)}>
 		<div className={cn(imageContainer)}>
-			<Image src={imageUrl} alt={name} width={option?.isBig?161:120} height={option?.isBig?161:120}   className="object-cover"/>
+			{imageUrl && !imageError ? (
+				<Image 
+					src={imageUrl} 
+					alt={name} 
+					width={option?.isBig?161:120} 
+					height={option?.isBig?161:120}   
+					className="object-cover w-full h-full"
+					onError={handleImageError}
+					unoptimized
+				/>
+			) : (
+				<div className="flex items-center justify-center w-full h-full text-gray-400 bg-gray-50">
+					<div className="text-center">
+						<div className="text-2xl mb-1">🎁</div>
+						<div className="text-xs">{name.charAt(0)}</div>
+					</div>
+				</div>
+			)}
 		</div>
 		<div className="px-[8px] flex flex-col gap-y-[4px]">
 			<div className="text-[12px] text-sub-title leading-none font-bold">{storeName}</div>

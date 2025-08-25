@@ -3,9 +3,11 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import useSign from "@/hooks/useSign";
 
 export default function Page() {
   const router = useRouter();
+  const { userData, userId } = useSign();
 
   const handleChallengeClick = () => {
     router.push("/challenge");
@@ -35,7 +37,7 @@ export default function Page() {
         {/* 우측 라벨 배지 */}
         <div className="absolute right-5 top-[120px] flex flex-col gap-4">
           <Badge size={51}>D-6</Badge>
-          <Badge size={51}>500p</Badge>
+          <Badge size={51}>{userData?.point || 0}p</Badge>
         </div>
 
         {/* 일러스트 */}

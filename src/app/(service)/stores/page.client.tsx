@@ -7,6 +7,7 @@ import { cn } from "fast-jsx/util";
 import { useQuery } from "@tanstack/react-query";
 import storeApi from "@/services/api/store";
 import Loading from "@/components/template/Loading";
+import useSign from "@/hooks/useSign";
 
 export default function Client(){
 	const body={
@@ -14,15 +15,24 @@ export default function Client(){
 		background:'bg-bg-color-2',
 	}
 
+	// useSign 훅을 통해 userId 가져오기
+	const { userId } = useSign();
+
 	// API 데이터 가져오기
 	const { data: gifticonData, isLoading: gifticonLoading } = useQuery({
 		queryKey: ['gifticon'],
-		queryFn: () => storeApi.getGifticon() // userId는 임시로 1 사용
+		queryFn: () => storeApi.getGifticon()
 	});
 
 	const { data: couponData, isLoading: couponLoading } = useQuery({
-		queryKey: ['coupon'],
-		queryFn: () => storeApi.getCoupon(1), // userId는 임시로 1 사용
+		queryKey: ['coupon', userId],
+		queryFn: () => storeApi.getCoupon(userId || 1),
+		enabled: !!userId,
+	});
+
+	const { data: storeBrandData, isLoading: storeBrandLoading } = useQuery({
+		queryKey: ['storeBrand'],
+		queryFn: () => storeApi.getStoreBrand()
 	});
 
 	// Gifticon을 Item으로 변환하는 함수
@@ -35,7 +45,7 @@ export default function Client(){
 	});
 
 	// 로딩 상태 처리
-	if (gifticonLoading || couponLoading) {
+	if (gifticonLoading || couponLoading || storeBrandLoading) {
 		return <Loading/>;
 	}
 
@@ -50,18 +60,17 @@ export default function Client(){
 
 	// API 데이터를 Item 타입으로 변환
 	const items = gifticonData?.gifticonlist?.map(convertGifticonToItem) || defaultItems;
+	const brandItems = storeBrandData?.stores || [];
 
 	return <div>
 		<ServiceHeader title="상품" option={{isBack:true}} />
 		<ChallengeStatus
-				howMuchChallenge={10}
-				point={1000}
 				button={<MyCouponButton/>}
 				version="v1"
 			/>
 		<div className={cn(body)}>
 			<StoreTemplate.Recommend items={items}/>
 		</div>
-		<StoreTemplate.OverView items={items}/>
+		<StoreTemplate.OverView items={items} brandItems={brandItems}/>
 	</div>
 }

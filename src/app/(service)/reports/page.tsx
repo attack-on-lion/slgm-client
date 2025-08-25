@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import useSign from "@/hooks/useSign";
 
 export default function ReportsPage() {
   const router = useRouter();
+  const { userData } = useSign();
   
   // 필터 상태
   const [startDate, setStartDate] = useState("2025-02-05");

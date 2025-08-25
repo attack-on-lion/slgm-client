@@ -14,7 +14,7 @@ async function getGifticonsByStoreId(storeId:number){
 }
 
 async function getStoreBrand(){
-	const response=await api.get<StoreBrandApi>(`/stores`)
+	const response=await api.get<StoreBrandApi>(`/stores/brand`)
 	return response.data
 }
 
