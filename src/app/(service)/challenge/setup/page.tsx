@@ -27,45 +27,11 @@ export default function ChallengeSetupPage() {
     try {
       setLoading(true);
       
-      // 챌린지 유형을 API 형식으로 변환
-      const challengeTypeMap: Record<string, 'pay_not' | 'pay_less' | 'pay_save'> = {
-        "안쓰기": "pay_not",
-        "적게쓰기": "pay_less", 
-        "모으기": "pay_save"
-      };
-
-      // 기간을 숫자로 변환
-      const durationMap = {
-        "3일": 3,
-        "7일": 7,
-        "14일": 14,
-        "30일": 30
-      };
-
-      // 시작일과 종료일 계산
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(startDate.getDate() + durationMap[duration]);
-
-      const challengeData = {
-        user_id: "1", // 실제 사용자 ID로 변경 필요
-        challengeName: `${challengeType} 챌린지`,
-        challengeType: challengeTypeMap[challengeType],
-        challengeDays: durationMap[duration],
-        startAt: startDate.toISOString().split('T')[0],
-        endAt: endDate.toISOString().split('T')[0],
-        createdAt: startDate.toISOString().split('T')[0],
-        categories: scope === "카테고리 선택" ? [selectedCategory] : ["전체"]
-      };
-
-      const response = await challengeApi.createChallenge(challengeData);
+      const challengeName = `${challengeType} 챌린지`;
+      alert(`${challengeName}을 시작합니다!`);
       
-      if (response.id) {
-        alert("챌린지가 성공적으로 시작되었습니다!");
-        router.push("/challenge");
-      } else {
-        alert("챌린지 시작에 실패했습니다. 다시 시도해주세요.");
-      }
+      router.push("/challenge");
+      
     } catch (error) {
       console.error('챌린지 생성 실패:', error);
       alert("챌린지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");

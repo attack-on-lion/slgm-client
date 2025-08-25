@@ -13,6 +13,8 @@ export default function MainPage() {
   const { userId, userData } = useSign();
   const [recentPayment, setRecentPayment] = useState<PaymentItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [balanceInfo, setBalanceInfo] = useState<any>(null);
+  const [budgetStatus, setBudgetStatus] = useState<any>(null);
 
   const navigateToChallenge = () => router.push("/challenge");
   const navigateToReports = () => router.push("/reports");
@@ -45,12 +47,27 @@ export default function MainPage() {
           }
         } catch (error) {
           console.warn('결제 내역 조회 실패:', error);
-          // 결제 내역이 없어도 계속 진행
+        }
+
+        // 잔액 정보 조회
+        try {
+          const balanceResponse = await paymentApi.getBalanceInfo(userId);
+          setBalanceInfo(balanceResponse);
+        } catch (error) {
+          console.warn('잔액 정보 조회 실패:', error);
+        }
+
+        // 월 예산 소비 현황 조회
+        try {
+          const currentMonth = new Date().getMonth() + 1;
+          const budgetResponse = await paymentApi.getMonthlyBudgetStatus(userId, currentMonth);
+          setBudgetStatus(budgetResponse);
+        } catch (error) {
+          console.warn('월 예산 소비 현황 조회 실패:', error);
         }
         
       } catch (error) {
         console.warn('데이터 조회 중 예상치 못한 오류가 발생했습니다:', error);
-        // 전체적인 오류가 발생해도 페이지는 계속 표시
       } finally {
         setLoading(false);
       }
@@ -113,24 +130,24 @@ export default function MainPage() {
       <section className="bg-[#F5F5F5] px-5 py-6">
         <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5">
           <p className="text-[20px] font-extrabold leading-snug">
-            잔액이 {(userData?.point || 0).toLocaleString()}원 남았습니다.
+            잔액이 {balanceInfo?.remainingBalance ? balanceInfo.remainingBalance.toLocaleString() : (userData?.point || 0).toLocaleString()}원 남았습니다.
           </p>
 
           <p className="mt-1.5 flex items-center gap-2 text-[14px] text-slate-500">
-            전월 대비 4% 감소
-            <svg width="28" height="28" viewBox="0 0 30 25" className="text-[#42D2B8]" fill="currentColor">
+            전월 대비 {balanceInfo?.monthOverMonthChange ? Math.abs(balanceInfo.monthOverMonthChange).toFixed(1) : 4}% {balanceInfo?.monthOverMonthChange && balanceInfo.monthOverMonthChange < 0 ? '감소' : '증가'}
+            <svg width="28" height="28" viewBox="0 0 30 25" className={`${balanceInfo?.monthOverMonthChange && balanceInfo.monthOverMonthChange < 0 ? 'text-[#42D2B8]' : 'text-red-500'} transform ${balanceInfo?.monthOverMonthChange && balanceInfo.monthOverMonthChange < 0 ? '' : 'rotate-180'}`} fill="currentColor">
               <path d="M12 16l-6-8h12l-6 8z" />
             </svg>
           </p>
 
           <div className="mt-5">
             <div className="relative h-7 w-full rounded-full bg-[#DDF6F2]">
-              <div className="absolute left-0 top-0 h-full rounded-full bg-[#42D2B8] flex items-center justify-center text-white text-[14px] font-semibold" style={{ width: '70%' }}>
-                560,500
+              <div 
+                className="absolute left-0 top-0 h-full rounded-full bg-[#42D2B8] flex items-center justify-center text-white text-[14px] font-semibold" 
+                style={{ width: `${Math.min((balanceInfo?.remainingBalance || userData?.point || 0) / 500000 * 100, 100)}%` }}
+              >
+                {balanceInfo?.remainingBalance ? balanceInfo.remainingBalance.toLocaleString() : (userData?.point || 0).toLocaleString()}
               </div>
-            </div>
-            <div className="mt-2 text-right text-[14px] text-slate-500">
-              월 예산 중 70% 소비
             </div>
           </div>
         </div>

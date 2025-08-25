@@ -83,12 +83,41 @@ async function getMonthlyComparison(userId: number, selectedMonth: number): Prom
   }
 }
 
+// 잔액 정보 조회
+async function getBalanceInfo(userId: number): Promise<any> {
+  try {
+    const response = await api.get(`/payments/${userId}/balance`);
+    return response.data;
+  } catch (error) {
+    console.error('잔액 정보 조회 실패:', error);
+    throw error;
+  }
+}
+
+// 월 예산 소비 현황 조회
+async function getMonthlyBudgetStatus(userId: number, month?: number): Promise<any> {
+  try {
+    const queryParams = new URLSearchParams();
+    if (month !== undefined) {
+      queryParams.append('month', month.toString());
+    }
+    
+    const response = await api.get(`/payments/${userId}/budget-status?${queryParams.toString()}`);
+    return response.data;
+  } catch (error) {
+    console.error('월 예산 소비 현황 조회 실패:', error);
+    throw error;
+  }
+}
+
 const paymentApi = {
   createPayment,
   getPayments,
   getWeeklyExpenses,
   getMonthlyTop3,
-  getMonthlyComparison
+  getMonthlyComparison,
+  getBalanceInfo,
+  getMonthlyBudgetStatus
 };
 
 export default paymentApi;
