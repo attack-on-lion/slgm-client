@@ -5,58 +5,58 @@ import { useRouter } from "next/navigation";
 import ServiceNavigator from "@/components/molecule/(service)/Navigator";
 import paymentApi from "@/services/api/payment";
 import { PaymentItem } from "@/interfaces/Payment";
-import { userApi } from "@/services/api/user";
-import { mainPageApi } from "@/services/api/mainPage";
-import { UserProfile } from "@/interfaces/User";
-import { MainPageData } from "@/interfaces/MainPage";
+import useSign from "@/hooks/useSign";
 
 export default function MainPage() {
   const router = useRouter();
+  const { userId, userData } = useSign();
   const [recentPayment, setRecentPayment] = useState<PaymentItem | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [mainPageData, setMainPageData] = useState<MainPageData | null>(null);
 
   const navigateToChallenge = () => router.push("/challenge");
   const navigateToReports = () => router.push("/reports");
 
-
   useEffect(() => {
     const fetchData = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const [paymentResponse, profileResponse, mainPageResponse] = await Promise.all([
-          (async () => {
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            
-            const response = await paymentApi.getPayments(1, {
-              from: firstDay.toISOString().split('T')[0],
-              to: lastDay.toISOString().split('T')[0],
-              page: 0,
-              size: 1
-            });
-            
-            if (response.items.length > 0) {
-              setRecentPayment(response.items[0]);
-            }
-          })(),
-          userApi.getUserProfile("1"),
-          mainPageApi.getMainPageData()
-        ]);
         
-        setUserProfile(profileResponse);
-        setMainPageData(mainPageResponse);
+        // 결제 내역 조회
+        try {
+          const today = new Date();
+          const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+          const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          
+          const response = await paymentApi.getPayments(userId, {
+            from: firstDay.toISOString().split('T')[0],
+            to: lastDay.toISOString().split('T')[0],
+            page: 0,
+            size: 1
+          });
+          
+          if (response.items && response.items.length > 0) {
+            setRecentPayment(response.items[0]);
+          }
+        } catch (error) {
+          console.warn('결제 내역 조회 실패:', error);
+          // 결제 내역이 없어도 계속 진행
+        }
+        
       } catch (error) {
-        console.error('데이터 조회 실패:', error);
+        console.warn('데이터 조회 중 예상치 못한 오류가 발생했습니다:', error);
+        // 전체적인 오류가 발생해도 페이지는 계속 표시
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [userId]);
 
   return (
     <>
@@ -75,8 +75,8 @@ export default function MainPage() {
         </header>
 
         <div className="absolute right-5 top-[120px] flex flex-col gap-4">
-          <Badge size={51}>D-{mainPageData?.challengeDday || 6}</Badge>
-          <Badge size={51}>{mainPageData?.points || 500}p</Badge>
+          <Badge size={51}>D-7</Badge>
+          <Badge size={51}>{userData?.point || 0}p</Badge>
         </div>
 
         <div className="mt-6 flex justify-center">
@@ -87,11 +87,11 @@ export default function MainPage() {
           <p className="text-slate-500 text-[12px]">사용 가능 금액</p>
           <div className="mt-1.5 flex items-baseline gap-2.5">
             <span className="text-[28px] font-extrabold tracking-tight text-slate-800">
-              {mainPageData?.availableAmount?.toLocaleString() || '47,000'}원
+              {(userData?.point || 0).toLocaleString()}원
             </span>
             <span className="text-[22px] text-slate-400">/</span>
             <span className="text-[22px] text-slate-400">
-              {mainPageData?.totalBudget?.toLocaleString() || '100,000'}원
+              {(userData?.point || 0).toLocaleString()}원
             </span>
           </div>
         </div>
@@ -99,7 +99,7 @@ export default function MainPage() {
 
       <section className="bg-white px-6 pt-6 pb-10">
         <p className="text-center text-[18px] leading-7 font-semibold text-slate-700">
-          "카드 대신 이성을 꺼내자"
+          &ldquo;카드 대신 이성을 꺼내자&rdquo;
         </p>
 
 
@@ -112,11 +112,11 @@ export default function MainPage() {
       <section className="bg-[#F5F5F5] px-5 py-6">
         <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5">
           <p className="text-[20px] font-extrabold leading-snug">
-            잔액이 {mainPageData?.balance?.toLocaleString() || '189,500'}원 남았습니다.
+            잔액이 {(userData?.point || 0).toLocaleString()}원 남았습니다.
           </p>
 
           <p className="mt-1.5 flex items-center gap-2 text-[14px] text-slate-500">
-            전월 대비 {mainPageData?.monthlyDecreaseRate || '4'}% 감소
+            전월 대비 4% 감소
             <svg width="28" height="28" viewBox="0 0 30 25" className="text-[#42D2B8]" fill="currentColor">
               <path d="M12 16l-6-8h12l-6 8z" />
             </svg>
@@ -124,12 +124,12 @@ export default function MainPage() {
 
           <div className="mt-5">
             <div className="relative h-7 w-full rounded-full bg-[#DDF6F2]">
-              <div className="absolute left-0 top-0 h-full rounded-full bg-[#42D2B8] flex items-center justify-center text-white text-[14px] font-semibold" style={{ width: `${mainPageData?.budgetConsumptionRate || 70}%` }}>
-                {mainPageData?.monthlyExpense?.toLocaleString() || '560,500'}
+              <div className="absolute left-0 top-0 h-full rounded-full bg-[#42D2B8] flex items-center justify-center text-white text-[14px] font-semibold" style={{ width: '70%' }}>
+                560,500
               </div>
             </div>
             <div className="mt-2 text-right text-[14px] text-slate-500">
-              월 예산 중 {mainPageData?.budgetConsumptionRate || '70'}% 소비
+              월 예산 중 70% 소비
             </div>
           </div>
         </div>

@@ -183,7 +183,7 @@ async function createChallenge(data: ChallengeCreateRequest): Promise<ChallengeC
 
 // 추천 챌린지 생성
 async function createRecommendations(data: RecommendationCreateRequest): Promise<RecommendationCreateResponse> {
-    const response = await api.post<RecommendationCreateRequest, RecommendationCreateResponse>('/challenges/recommendations', data);
+    const response = await api.post<RecommendationCreateRequest, RecommendationCreateResponse>('/recommendations', data);
     return response.data;
 }
 
