@@ -4,15 +4,16 @@ import ServiceNavigator from "@/components/molecule/(service)/Navigator"
 import useSign from "@/hooks/useSign"
 import Loading from "@/components/template/Loading"
 import { useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function ServiceLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useSign();
   const router = useRouter();
+  const pathname = usePathname();
 
   // 로그인 상태 확인 및 리다이렉트 처리
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !isAuthenticated && !pathname.includes('/payment')) {
       router.push('/sign-in');
     }
   }, [isAuthenticated, isLoading, router]);

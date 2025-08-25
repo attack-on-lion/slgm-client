@@ -3,6 +3,7 @@ import { cn } from "fast-jsx/util";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import QRCode from "react-qr-code";
+import useSign from "@/hooks/useSign";
 
 interface QRModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export default function QRModal({
   onClose,
   gifticon
 }: QRModalProps) {
+  const { userId } = useSign();
   const [qrData, setQrData] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,10 +35,10 @@ export default function QRModal({
     setIsLoading(true);
     try {
       // QR 코드에 포함할 고유 코드 생성
-      const uniqueCode = `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`;
+      const code = `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`;
       
-      // QR 코드에 포함할 URL 생성 (실제 도메인으로 변경 필요)
-      const qrUrl = `${window.location.origin}/api/qr-scan?code=${uniqueCode}&gifticonId=${gifticon.id}`;
+      // QR 코드에 포함할 웹페이지 URL 생성 (userId 포함)
+      const qrUrl = `${window.location.origin}/api/qr-scan?code=${code}&gifticonId=${gifticon.id}&userId=${userId || 1}`;
       
       setQrData(qrUrl);
     } catch (error) {
@@ -105,7 +107,7 @@ export default function QRModal({
                     지점에서 QR 코드를 스캔해주세요
                   </p>
                   <p className="text-[8px] text-gray-300 mt-1">
-                    코드: {qrData.split('code=')[1]?.split('&')[0] || 'N/A'}
+                    코드: {qrData.split('&')[0].split('=')[1]}
                   </p>
                 </div>
               </div>

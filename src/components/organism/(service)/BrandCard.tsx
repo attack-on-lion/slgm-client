@@ -13,9 +13,10 @@ interface BrandCardProps {
 	option?: {
 		isBig?: boolean;
 	};
+	onClick?: () => void;
 }
 
-export default function BrandCard({ brand, option }: BrandCardProps) {
+export default function BrandCard({ brand, option, onClick }: BrandCardProps) {
 	const [imageError, setImageError] = useState(false);
 
 	const container = {
@@ -25,6 +26,8 @@ export default function BrandCard({ brand, option }: BrandCardProps) {
 		boundary: 'rounded-[12px]',
 		shadow: 'shadow-sm',
 		overflow: 'overflow-hidden',
+		cursor: onClick ? 'cursor-pointer' : '',
+		hover: onClick ? 'hover:shadow-md transition-shadow' : '',
 	};
 
 	const imageContainer = {
@@ -44,7 +47,7 @@ export default function BrandCard({ brand, option }: BrandCardProps) {
 	};
 
 	return (
-		<div className={cn(container)}>
+		<div className={cn(container)} onClick={onClick}>
 			<div className={cn(imageContainer)}>
 				{brand.logoUrl && !imageError ? (
 					<Image
