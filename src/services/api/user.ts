@@ -1,4 +1,5 @@
 import { UserCreateRequest, UserCreateResponse, UserProfile, UserError } from "@/interfaces/User";
+import http from "./config";
 
 const API_BASE_URL = "https://api.slgmslgm.com";
 
@@ -18,7 +19,7 @@ const API_BASE_URL = "https://api.slgmslgm.com";
 //   createdAt: "2025-01-15",
 //   updatedAt: "2025-01-15T08:10:06.64074"
 // };
-
+const api=http.api()
 export const userApi = {
   async createUser(userData: UserCreateRequest): Promise<UserCreateResponse> {
     try {
@@ -45,42 +46,8 @@ export const userApi = {
     }
   },
 
-  async getUserProfile(userId: string): Promise<UserProfile> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          const errorData: UserError = await response.json();
-          throw new Error(errorData.errorMessage);
-        }
-        throw new Error('유저 정보 조회에 실패했습니다.');
-      }
-
-      return await response.json() as UserProfile;
-    } catch (error) {
-      console.error('유저 정보 조회 실패:', error);
-      // CORS 문제 해결 전까지 임시 더미 데이터 반환
-      return {
-        user_id: 1,
-        name: "홍길동",
-        age: 25,
-        profileImgUrl: "/squirrel.svg",
-        location: "서울시 노원구",
-        gender: "남",
-        email: "honggil@gmail.com",
-        phoneNumber: "010-1234-5678",
-        categoryName: "식비",
-        point: 150,
-        baseAmount: 200000,
-        createdAt: "2025-01-15",
-        updatedAt: "2025-01-15T08:10:06.64074"
-      };
-    }
-  },
+  async getUserProfile(userId: number): Promise<UserProfile> {
+    const response = await api.get<UserProfile>(`/users/${userId}`);
+    return response.data;
+  }
 };
