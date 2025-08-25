@@ -39,28 +39,20 @@ export default function Client(){
 
 	// 기본 데이터 (API 데이터가 없을 경우)
 	const defaultCharacter = {
-		imageUrl:"/images/characters/다람쥐.png",
-		name:"다람이",
+		imageUrl: "/images/characters/다람쥐.png",
+		name: "다람이",
 	};
 
-	const defaultHistories = [{
-		name:"캐릭터 구매",
-		date:new Date(),
-		howLong:10,
-		point:1000,
-	}];
-
 	return <div>
-		<ServiceHeader title="마이페이지" option={{isBack:true}} />
+		<ServiceHeader title="마이페이지" option={{ isBack: true }} />
 		<div className={cn(body)}>
-			<MyPageTemplate.Point 
-				button={<button onClick={() => setIsDetail(!isDetail)}>자세히 보기</button>} 
+			<MyPageTemplate.Point
+				button={<button onClick={() => setIsDetail(!isDetail)}>자세히 보기</button>}
 			/>
 			<MyPageTemplate.Character character={userCharacterData?.items?.[0] || defaultCharacter} />
 			<MyPageTemplate.Config />
-			<MyPageDetail 
-				state={[isDetail, setIsDetail]} 
-				histories={defaultHistories} 
+			<MyPageDetail
+				state={[isDetail, setIsDetail]}
 			/>
 		</div>
 	</div>
