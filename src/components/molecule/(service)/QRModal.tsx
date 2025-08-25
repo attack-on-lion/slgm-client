@@ -32,15 +32,13 @@ export default function QRModal({
   const generateQRCode = async () => {
     setIsLoading(true);
     try {
-      // QR 코드 데이터 생성
-      const qrData = JSON.stringify({
-        gifticonId: gifticon.id,
-        gifticonName: gifticon.gifticonName,
-        timestamp: new Date().toISOString(),
-        code: `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`
-      });
+      // QR 코드에 포함할 고유 코드 생성
+      const uniqueCode = `GIFT-${gifticon.id}-${Date.now().toString(36).toUpperCase()}`;
       
-      setQrData(qrData);
+      // QR 코드에 포함할 URL 생성 (실제 도메인으로 변경 필요)
+      const qrUrl = `${window.location.origin}/api/qr-scan?code=${uniqueCode}&gifticonId=${gifticon.id}`;
+      
+      setQrData(qrUrl);
     } catch (error) {
       console.error('QR 코드 생성 실패:', error);
       setQrData('QR 코드 생성 실패');
@@ -107,7 +105,7 @@ export default function QRModal({
                     지점에서 QR 코드를 스캔해주세요
                   </p>
                   <p className="text-[8px] text-gray-300 mt-1">
-                    코드: {qrData.split('"code":"')[1]?.split('"')[0] || 'N/A'}
+                    코드: {qrData.split('code=')[1]?.split('&')[0] || 'N/A'}
                   </p>
                 </div>
               </div>
