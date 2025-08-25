@@ -1,9 +1,22 @@
 'use client'
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "fast-jsx/util";
+import { useEffect, useState } from "react";
 
 export default function PaymentSuccessPage(){
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const [isLoading, setIsLoading] = useState(true);
+
+	// URL 파라미터에서 정보 가져오기
+	const code = searchParams.get('code');
+	const gifticonId = searchParams.get('gifticonId');
+	const userId = searchParams.get('userId');
+
+	useEffect(() => {
+		// 페이지 로드 완료 후 로딩 상태 해제
+		setIsLoading(false);
+	}, []);
 
 	const container = {
 		display: 'flex flex-col items-center justify-center',
@@ -39,6 +52,17 @@ export default function PaymentSuccessPage(){
 		style: 'cursor-pointer',
 	};
 
+	if (isLoading) {
+		return (
+			<div className={cn(container)}>
+				<div className={cn(successCard)}>
+					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#42D2B8] mx-auto mb-4"></div>
+					<p className="text-gray-600">처리 중...</p>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className={cn(container)}>
 			<div className={cn(successCard)}>
@@ -64,6 +88,15 @@ export default function PaymentSuccessPage(){
 					즐거운 시간 보내세요!
 				</p>
 
+				{/* 디버깅용 정보 (개발 환경에서만 표시) */}
+				{process.env.NODE_ENV === 'development' && (
+					<div className="text-xs text-gray-400 mt-4 p-2 bg-gray-50 rounded">
+						<div>Code: {code}</div>
+						<div>Gifticon ID: {gifticonId}</div>
+						<div>User ID: {userId}</div>
+					</div>
+				)}
+
 				<button 
 					onClick={() => router.push('/mainpage')}
 					className={cn(button)}
@@ -74,4 +107,3 @@ export default function PaymentSuccessPage(){
 		</div>
 	);
 }
-export const dynamic = 'force-dynamic';
