@@ -1,26 +1,66 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import useSign from "@/hooks/useSign";
+import ServiceNavigator from "@/components/molecule/(service)/Navigator";
+import paymentApi from "@/services/api/payment";
+import { PaymentItem } from "@/interfaces/Payment";
+import { userApi } from "@/services/api/user";
+import { mainPageApi } from "@/services/api/mainPage";
+import { UserProfile } from "@/interfaces/User";
+import { MainPageData } from "@/interfaces/MainPage";
 
-export default function Page() {
+export default function MainPage() {
   const router = useRouter();
-  const { userData, userId } = useSign();
+  const [recentPayment, setRecentPayment] = useState<PaymentItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [mainPageData, setMainPageData] = useState<MainPageData | null>(null);
 
-  const handleChallengeClick = () => {
-    router.push("/challenge");
-  };
+  const navigateToChallenge = () => router.push("/challenge");
+  const navigateToReports = () => router.push("/reports");
 
-  const handleReportsClick = () => {
-    router.push("/reports");
-  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [paymentResponse, profileResponse, mainPageResponse] = await Promise.all([
+          (async () => {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            const response = await paymentApi.getPayments(1, {
+              from: firstDay.toISOString().split('T')[0],
+              to: lastDay.toISOString().split('T')[0],
+              page: 0,
+              size: 1
+            });
+            
+            if (response.items.length > 0) {
+              setRecentPayment(response.items[0]);
+            }
+          })(),
+          userApi.getUserProfile("1"),
+          mainPageApi.getMainPageData()
+        ]);
+        
+        setUserProfile(profileResponse);
+        setMainPageData(mainPageResponse);
+      } catch (error) {
+        console.error('데이터 조회 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <>
       <section className="relative w-full bg-[#DDF6F2] px-5 pt-6 pb-4 overflow-hidden">
-        {/* 상단 타이틀 & 알림 아이콘 */}
         <header className="flex items-start justify-between">
           <div>
             <h1 className="text-[20px] leading-tight font-extrabold text-slate-800">
@@ -34,117 +74,110 @@ export default function Page() {
           <BellIcon className="w-7 h-7 text-[#FFC83D]" />
         </header>
 
-        {/* 우측 라벨 배지 */}
         <div className="absolute right-5 top-[120px] flex flex-col gap-4">
-          <Badge size={51}>D-6</Badge>
-          <Badge size={51}>{userData?.point || 0}p</Badge>
+          <Badge size={51}>D-{mainPageData?.challengeDday || 6}</Badge>
+          <Badge size={51}>{mainPageData?.points || 500}p</Badge>
         </div>
 
-        {/* 일러스트 */}
         <div className="mt-6 flex justify-center">
-          <Image src="/squirrel.svg" alt="다람쥐" width={197} height={198} />
+          <img src="/squirrel.svg" alt="다람쥐" className="w-[197px] h-[198px]" />
         </div>
 
-        {/* 금액 정보 */}
         <div className="mt-5">
           <p className="text-slate-500 text-[12px]">사용 가능 금액</p>
           <div className="mt-1.5 flex items-baseline gap-2.5">
-            <span className="text-[28px] font-extrabold tracking-tight text-slate-800">47,000원</span>
+            <span className="text-[28px] font-extrabold tracking-tight text-slate-800">
+              {mainPageData?.availableAmount?.toLocaleString() || '47,000'}원
+            </span>
             <span className="text-[22px] text-slate-400">/</span>
-            <span className="text-[22px] text-slate-400">100,000원</span>
+            <span className="text-[22px] text-slate-400">
+              {mainPageData?.totalBudget?.toLocaleString() || '100,000'}원
+            </span>
           </div>
         </div>
       </section>
 
-      {/* 인용문 + 버튼 */}
       <section className="bg-white px-6 pt-6 pb-10">
         <p className="text-center text-[18px] leading-7 font-semibold text-slate-700">
-          <span className="text-[] text-[22px] align-middle"></span>
-          {"카드 대신 이성을 꺼내자"}
-          <span className="text-slate-300 text-[22px] align-middle"></span>
+          "카드 대신 이성을 꺼내자"
         </p>
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <PrimaryButton ariaLabel="챌린지" onClick={handleChallengeClick}>챌린지</PrimaryButton>
-          <PrimaryButton ariaLabel="결제 내역" onClick={handleReportsClick}>결제 내역</PrimaryButton>
-        </div>
 
+
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          <PrimaryButton onClick={navigateToChallenge}>챌린지</PrimaryButton>
+          <PrimaryButton onClick={navigateToReports}>결제 내역</PrimaryButton>
+        </div>
       </section>
       <section className="bg-[#F5F5F5] px-5 py-6">
         <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5">
           <p className="text-[20px] font-extrabold leading-snug">
-            잔액이 189,500원 남았습니다.
+            잔액이 {mainPageData?.balance?.toLocaleString() || '189,500'}원 남았습니다.
           </p>
 
           <p className="mt-1.5 flex items-center gap-2 text-[14px] text-slate-500">
-          전월 대비 4% 감소
-            <svg
-              width="28" height="28" viewBox="0 0 30 25" aria-hidden="true"
-              className="text-[#42D2B8]" fill="currentColor"
-            >
+            전월 대비 {mainPageData?.monthlyDecreaseRate || '4'}% 감소
+            <svg width="28" height="28" viewBox="0 0 30 25" className="text-[#42D2B8]" fill="currentColor">
               <path d="M12 16l-6-8h12l-6 8z" />
             </svg>
           </p>
 
-        {/* 진행바 */}
-        <div className="mt-5">
-          <div
-            className="relative h-7 w-full rounded-full bg-[#DDF6F2]"
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={70}
-          >
-        <div
-          className="absolute left-0 top-0 h-full rounded-full bg-[#42D2B8] flex items-center justify-center whitespace-nowrap text-white text-[14px] font-semibold"
-          style={{ width: '70%' }}
-        >
-          560,500
-        </div>
-
-      </div>
-
-            {/* 하단 설명 */}
-      <div className="mt-2 text-right text-[14px] text-slate-500">
-        월 예산 중 70% 소비
-      </div>
-    </div>
-  </div>
-</section>
-
-      {/* 결제 내역 위젯 (잔액 위젯 바로 아래) */}
-      <section className="bg-[#F5F6F8] px-5 pt-0 pb-8">
-        <div className="px-5 py-6">
-          {/* 헤더 */}
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-[18px] font-bold text-slate-800">결제 내역</h3>
-            <button 
-              onClick={handleReportsClick}
-              className="text-[14px] text-slate-500 hover:text-slate-700 transition-colors"
-            >
-              &gt;
-            </button>
-          </div>
-
-          {/* 결제 내역 카드 */}
-          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-4">
-            <div className="flex items-center justify-between">
-              {/* 왼쪽: 가맹점명과 시간 */}
-              <div>
-                <p className="text-[16px] font-bold text-slate-800">맥도날드</p>
-                <p className="text-[14px] text-slate-500 mt-1">15:12</p>
+          <div className="mt-5">
+            <div className="relative h-7 w-full rounded-full bg-[#DDF6F2]">
+              <div className="absolute left-0 top-0 h-full rounded-full bg-[#42D2B8] flex items-center justify-center text-white text-[14px] font-semibold" style={{ width: `${mainPageData?.budgetConsumptionRate || 70}%` }}>
+                {mainPageData?.monthlyExpense?.toLocaleString() || '560,500'}
               </div>
-              
-              {/* 오른쪽: 카테고리와 금액 */}
-              <div className="text-right">
-                <p className="text-[14px] text-[#64B5F6]">식비</p>
-                <p className="text-[16px] font-bold text-slate-800 mt-1">12,000원</p>
-              </div>
+            </div>
+            <div className="mt-2 text-right text-[14px] text-slate-500">
+              월 예산 중 {mainPageData?.budgetConsumptionRate || '70'}% 소비
             </div>
           </div>
         </div>
       </section>
 
+      <section className="bg-[#F5F6F8] px-6 pt-0 pb-8">
+        <div className="py-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-[18px] font-bold text-slate-800">결제 내역</h3>
+            <button onClick={navigateToReports} className="text-[14px] text-slate-500 hover:text-slate-700">
+              &gt;
+            </button>
+          </div>
+
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-4">
+            {loading ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#42B6A1]"></div>
+              </div>
+            ) : recentPayment ? (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-[16px] font-bold text-slate-800">{recentPayment.storeName}</p>
+                  <p className="text-[14px] text-slate-500 mt-1">
+                    {new Date(recentPayment.transactionAt).toLocaleTimeString('ko-KR', { 
+                      hour: '2-digit', 
+                      minute: '2-digit',
+                      hour12: false 
+                    })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[14px] text-[#42B6A1]">{recentPayment.category.name}</p>
+                  <p className="text-[16px] font-bold text-slate-800 mt-1">
+                    {recentPayment.direction === 'INFLOW' ? '+' : '-'}{recentPayment.amount.toLocaleString()}원
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-4 text-slate-500">
+                <p>결제내역이 없습니다</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <ServiceNavigator />
     </>
   );
 }
@@ -169,26 +202,11 @@ function BellIcon({ className = 'w-6 h-6 text-yellow-400' }: { className?: strin
   );
 }
 
-function PrimaryButton({
-  children,
-  onClick,
-  ariaLabel,
-}: {
-  children: React.ReactNode;
-  onClick?: () => void;
-  ariaLabel?: string;
-}) {
+function PrimaryButton({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) {
   return (
     <button
       onClick={onClick}
-      aria-label={ariaLabel}
-      className="
-        w-full rounded-2xl px-4 py-4
-        font-semibold text-[16px]
-        bg-gradient-to-b from-[#39E0D5] to-[#42D2B8]
-        text-[#000000]
-        active:scale-95
-      "
+      className="w-full rounded-2xl px-4 py-4 font-semibold text-[16px] bg-gradient-to-b from-[#39E0D5] to-[#42D2B8] text-black active:scale-95"
     >
       {children}
     </button>
