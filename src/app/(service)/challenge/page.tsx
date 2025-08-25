@@ -1,29 +1,48 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import challengeApi from "@/services/api/challenge";
-import { CompletedChallenge, Recommendation } from "@/interfaces/Challenge";
 import { userApi } from "@/services/api/user";
 import { UserProfile } from "@/interfaces/User";
+import { Recommendation } from "@/interfaces/Challenge";
+import useSign from "@/hooks/useSign";
 import Image from "next/image";
+import { returnPoint } from "@/utils/point";
+
+// 챌린지 타입을 한국어로 변환하는 함수
+const getChallengeTypeKorean = (challengeType: string): string => {
+  switch (challengeType) {
+    case 'pay_not':
+      return '안쓰기';
+    case 'pay_less':
+      return '줄이기';
+    case 'pay_save':
+      return '모으기';
+    default:
+      return '줄이기';
+  }
+};
 
 export default function ChallengePage() {
   const router = useRouter();
-  
-  const [completedChallenges, setCompletedChallenges] = useState<CompletedChallenge[]>([]);
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
-  const [availableChallenges, setAvailableChallenges] = useState<Recommendation[]>([]);
-  const [selectedDays, setSelectedDays] = useState<number | null>(null);
+  const { userId, userData } = useSign();
   const [loading, setLoading] = useState(true);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [availableChallenges, setAvailableChallenges] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [selectedDays, setSelectedDays] = useState<number | null>(null);
   
   useEffect(() => {
     const fetchData = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const [completed, recs, available, profile] = await Promise.all([
-          challengeApi.getCompletedChallenges(),
+        const [recs, available, profile] = await Promise.all([
           challengeApi.createRecommendations({
             user_id: "1",
             pays: [
@@ -35,9 +54,8 @@ export default function ChallengePage() {
           userApi.getUserProfile(1)
         ]);
         
-        setCompletedChallenges(completed);
-        setRecommendations(recs.recommendations);
-        setAvailableChallenges(available);
+        setRecommendations(recs?.recommendations || []);
+        setAvailableChallenges(available || []);
         setUserProfile(profile);
       } catch (error) {
         console.error('챌린지 데이터 조회 실패:', error);
@@ -47,33 +65,19 @@ export default function ChallengePage() {
     };
 
     fetchData();
-  }, []);
+  }, [userId]);
+
+  // 필터링된 챌린지 계산
+  const filteredChallenges = selectedDays 
+    ? availableChallenges.filter(challenge => challenge.challengeDays === selectedDays)
+    : availableChallenges;
 
   const handleDaysFilter = async (days: number) => {
-    try {
-      setSelectedDays(days);
-      const recommendation = await challengeApi.getRecommendationsByDays(days);
-      const filteredRecs = recommendations.filter(rec => rec.challengeDays === days);
-      setRecommendations(filteredRecs);
-    } catch (error) {
-      console.error('추천 챌린지 조회 실패:', error);
-    }
+    setSelectedDays(days);
   };
 
   const handleAllFilter = async () => {
-    try {
-      setSelectedDays(null);
-      const recs = await challengeApi.createRecommendations({
-        user_id: "1",
-        pays: [
-          { transactionAt: "2025-01-20", category: "식비" },
-          { transactionAt: "2025-01-20", category: "쇼핑" }
-        ]
-      });
-      setRecommendations(recs.recommendations);
-    } catch (error) {
-      console.error('추천 챌린지 조회 실패:', error);
-    }
+    setSelectedDays(null);
   };
 
   const handleClose = () => {
@@ -102,8 +106,7 @@ export default function ChallengePage() {
               {recommendations[0].categories} 카테고리
             </h2>
             <p className="text-[16px] text-slate-700 mb-4">
-              {recommendations[0].challengeType === 'pay_not' ? '"안쓰기"' :
-               recommendations[0].challengeType === 'pay_less' ? '"줄이기"' : '"모으기"'} 챌린지
+              &ldquo;{getChallengeTypeKorean(recommendations[0].challengeType)}&rdquo; 챌린지
             </p>
             <p className="text-[14px] text-slate-600">
               {selectedDays}일 동안 진행되는 챌린지입니다
@@ -151,8 +154,7 @@ export default function ChallengePage() {
             {recommendations.map((challenge, index) => (
               <div key={index} className="min-w-[280px] bg-[#DDF6F2] border-2 border-[#42D2B8] rounded-2xl shadow-sm p-5 flex flex-col relative min-h-[320px]">
                 <h4 className="text-[22px] font-bold text-[#006D6F] mb-4 line-clamp-2 text-center">
-                  {Array.isArray(challenge.categories) ? challenge.categories.join(' ') : challenge.categories} {challenge.challengeType === 'pay_not' ? '안쓰기' :
-                   challenge.challengeType === 'pay_less' ? '줄이기' : '모으기'}
+                  {Array.isArray(challenge.categories) ? challenge.categories.join(' ') : challenge.categories} {getChallengeTypeKorean(challenge.challengeType)}
                 </h4>
                 
                 <div className="flex-1 space-y-4 mb-4">
@@ -163,7 +165,7 @@ export default function ChallengePage() {
                     </span>
                     <span className="inline-flex items-center px-3 py-1.5 bg-[#DDF6F2] text-slate-700 text-[12px] font-medium rounded-lg border border-[#42D2B8]">
                       <span className="w-2 h-2 bg-[#42D2B8] rounded-full mr-2"></span>
-                      {challenge.points}p
+                      {returnPoint(challenge.challengeDays)}p
                     </span>
                   </div>
                 </div>
@@ -222,20 +224,24 @@ export default function ChallengePage() {
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#42D2B8]"></div>
           </div>
-        ) : availableChallenges.length > 0 ? (
+        ) : filteredChallenges.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
-            {availableChallenges.map((challenge) => (
-              <div key={challenge.id} className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+            {filteredChallenges.map((challenge, index) => (
+              <div key={index} className="bg-white border border-slate-200 rounded-2xl shadow-sm">
                 <div className="bg-[#E0F2FE] px-3 py-2 rounded-t-2xl">
                   <h4 className="text-[14px] font-bold text-slate-800 mb-1">{challenge.challengeName}</h4>
                   <div className="flex items-center gap-2 text-[10px] text-slate-600">
                     <span>{challenge.challengeDays}일</span>
-                    <span>{challenge.points} p</span>
+                    <span>{challenge.challengeType === 'pay_not' ? '안쓰기' : 
+                           challenge.challengeType === 'pay_less' ? '줄이기' : '모으기'}</span>
                   </div>
                 </div>
                 
                 <div className="p-3">
-                  <p className="text-[12px] text-slate-700 mb-3 leading-relaxed">{challenge.description}</p>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[12px] text-slate-600">포인트</span>
+                    <span className="text-[14px] font-bold text-[#42D2B8]">{returnPoint(challenge.challengeDays)}p</span>
+                  </div>
                   
                   <button className="w-full bg-white border border-slate-300 text-slate-800 py-2 rounded-lg text-[12px] font-medium hover:bg-slate-50 transition-colors">
                     시작하기

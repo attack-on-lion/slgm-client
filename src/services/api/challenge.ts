@@ -147,17 +147,6 @@ async function getActiveChallenge(): Promise<ActiveChallenge> {
   }
 }
 
-// 완료된 챌린지 조회
-async function getCompletedChallenges(): Promise<CompletedChallenge[]> {
-  try {
-    const response = await api.get<CompletedChallenge[]>('/challenges/completed');
-    return response.data;
-  } catch (error) {
-    console.error('완료된 챌린지 조회 실패:', error);
-    throw error;
-  }
-}
-
 // 챌린지 생성
 async function createChallenge(data: ChallengeCreateRequest): Promise<ChallengeCreateResponse> {
   await new Promise(resolve => setTimeout(resolve, 800));
@@ -219,10 +208,17 @@ async function getChallengeById(id: number): Promise<ChallengeDetail> {
   };
 }
 
+
+interface ChallengeCheckApi {
+  challengeName: string;
+  challengeType: string;
+  challengeDays: number;
+}
+
 // 시작 가능한 모든 챌린지 조회
-async function getAvailableChallenges(): Promise<any[]> {
+async function getAvailableChallenges(): Promise<ChallengeCheckApi[]> {
   try {
-    const response = await api.get<any[]>('/challenges/available');
+    const response = await api.get<ChallengeCheckApi[]>('/recommendations/check');
     return response.data;
   } catch (error) {
     console.error('시작 가능한 챌린지 조회 실패:', error);
@@ -238,7 +234,6 @@ async function deleteChallenge(id: number): Promise<{ msg: string }> {
 
 const challengeApi = {
   getActiveChallenge,
-  getCompletedChallenges,
   createChallenge,
   createRecommendations,
   getRecommendations,
