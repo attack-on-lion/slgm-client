@@ -69,6 +69,29 @@ export default function AnalysisPage() {
           paymentApi.getMonthlyComparison(userId, selectedMonth)
         ]);
         
+        console.log('=== API 호출 결과 ===');
+        console.log('선택된 월:', selectedMonth);
+        console.log('API 응답 데이터:', {
+          selectedMonth,
+          weeklyData: weeklyResponse,
+          top3Data: top3Response,
+          comparisonData: comparisonResponse
+        });
+        
+        if (weeklyResponse) {
+          console.log('주간 데이터 상세:', {
+            days: weeklyResponse.days,
+            daysLength: weeklyResponse.days?.length,
+            firstDay: weeklyResponse.days?.[0],
+            allDays: weeklyResponse.days?.map(d => ({
+              date: d.date,
+              dayOfWeekKo: d.dayOfWeekKo,
+              totalExpense: d.totalExpense,
+              transactionCount: d.transactionCount
+            }))
+          });
+        }
+        
         setWeeklyData(weeklyResponse);
         setTop3Data(top3Response);
         setMonthlyComparisonData(comparisonResponse);
@@ -136,27 +159,45 @@ export default function AnalysisPage() {
   const topExpenses = getTopExpenses();
 
   const chartData = useMemo(() => {
-    if (!weeklyData?.days || weeklyData.days.length === 0) return [];
+    if (!weeklyData?.days || weeklyData.days.length === 0) {
+      console.log('주간 데이터 없음:', weeklyData);
+      return [];
+    }
+    
+    console.log('주간 데이터 원본:', weeklyData.days);
     
     const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
     const data = weekDays.map(day => {
       const existingDay = weeklyData.days.find(d => d.dayOfWeekKo === day);
+      console.log(`${day}요일 데이터 찾기:`, {
+        찾는요일: day,
+        찾은데이터: existingDay,
+        전체데이터: weeklyData.days?.map(d => `${d.dayOfWeekKo}: ${d.totalExpense}원`)
+      });
+      
       if (existingDay) {
-        return {
+        const result = {
           name: day,
-          소비액: existingDay.totalExpense,
-          거래횟수: existingDay.transactionCount,
+          소비액: existingDay.totalExpense || 0,
+          거래횟수: existingDay.transactionCount || 0,
           isWeekend: day === '토' || day === '일'
         };
+        console.log(`${day}요일 결과:`, result);
+        return result;
       } else {
-        return {
+        // API에 해당 요일 데이터가 없으면 0으로 표시
+        const result = {
           name: day,
-          소비액: 80000 + (weekDays.indexOf(day) * 15000),
-          거래횟수: 2 + (weekDays.indexOf(day) % 3),
+          소비액: 0,
+          거래횟수: 0,
           isWeekend: day === '토' || day === '일'
         };
+        console.log(`${day}요일 결과 (데이터 없음):`, result);
+        return result;
       }
     });
+    
+    console.log('생성된 차트 데이터:', data);
     return data;
   }, [weeklyData]);
 
@@ -174,8 +215,8 @@ export default function AnalysisPage() {
         rank: dummyIndex + 1,
         categoryId: 999 + dummyIndex,
         categoryName: randomCategory,
-        totalCurrent: 60000 + (dummyIndex * 20000),
-        totalPrevious: 40000 + (dummyIndex * 15000)
+        totalCurrent: 0,
+        totalPrevious: 0
       });
     }
     
@@ -183,13 +224,14 @@ export default function AnalysisPage() {
   }, [monthlyComparisonData]);
 
   const changeMonth = (direction: 'prev' | 'next') => {
+    console.log('월 변경 시작:', { direction, 현재월: selectedMonth });
+    
     setSelectedMonth(prev => {
       const newMonth = direction === 'prev' 
         ? prev === 1 ? 12 : prev - 1
         : prev === 12 ? 1 : prev + 1;
       
-      setLoading(true);
-      
+      console.log('새로운 월 설정:', { 이전월: prev, 새로운월: newMonth });
       return newMonth;
     });
   };
@@ -555,7 +597,8 @@ export default function AnalysisPage() {
               </div>
             ) : (
               <div className="text-center py-8 text-slate-500">
-                <p>일별 평균 소비 데이터가 없습니다</p>
+                <p className="mb-2">일별 평균 소비 데이터가 없습니다</p>
+                <p className="text-[12px] text-slate-400">해당 월의 소비 내역이 없거나 데이터를 불러올 수 없습니다.</p>
               </div>
             )}
           </div>
