@@ -1,15 +1,19 @@
+'use client'
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "fast-jsx/util";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
-interface PaymentSuccessPageProps {
-  searchParams: {
-    code?: string;
-    gifticonId?: string;
-    userId?: string;
-  };
-}
+export default function PaymentSuccessPage(){
+	const router = useRouter();
+	const searchParams = useSearchParams();
+	const [isLoading, setIsLoading] = useState(true);
+	const [params, setParams] = useState<{
+		code: string | null;
+		gifticonId: string | null;
+		userId: string | null;
+	}>({ code: null, gifticonId: null, userId: null });
 
-export default function PaymentSuccessPage({ searchParams }: PaymentSuccessPageProps) {
+
 	const container = {
 		display: 'flex flex-col items-center justify-center',
 		size: 'w-full h-screen',
@@ -72,15 +76,21 @@ export default function PaymentSuccessPage({ searchParams }: PaymentSuccessPageP
 				{/* 디버깅용 정보 (개발 환경에서만 표시) */}
 				{process.env.NODE_ENV === 'development' && (
 					<div className="text-xs text-gray-400 mt-4 p-2 bg-gray-50 rounded">
-						<div>Code: {searchParams.code}</div>
-						<div>Gifticon ID: {searchParams.gifticonId}</div>
-						<div>User ID: {searchParams.userId}</div>
+						<div>Code: {params.code}</div>
+						<div>Gifticon ID: {params.gifticonId}</div>
+						<div>User ID: {params.userId}</div>
 					</div>
 				)}
 
-				<Link href="/mainpage" className={cn(button)}>
+				<button 
+					onClick={() => {
+						console.log('메인으로 이동 버튼 클릭');
+						router.push('/mainpage');
+					}}
+					className={cn(button)}
+				>
 					메인으로 돌아가기
-				</Link>
+				</button>
 			</div>
 		</div>
 	);
