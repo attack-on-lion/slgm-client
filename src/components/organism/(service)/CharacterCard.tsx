@@ -31,7 +31,7 @@ function CharacterCard({character, isFocus}:{ character:CharacterRender, isFocus
 			<div className={`absolute top-0 left-0 w-full h-full bg-[#BEBEBE8F]/56 transition-opacity duration-200 ease-in-out ${isFocus ? 'opacity-0' : 'opacity-100'}`}/>
 		</div>
 }
-function CharacterCardAbbreviation({character}:{character:CharacterRender}){
+function CharacterCardAbbreviation({character, onClick}:{character:CharacterRender, onClick?: () => void}){
 	const container={
 		display:'flex flex-col items-center gap-y-[12px]',
 		size:'w-[157px] h-[184px]',
@@ -56,7 +56,10 @@ function CharacterCardAbbreviation({character}:{character:CharacterRender}){
 			</div>
 			<div className="text-center">{character.price.toLocaleString()} P</div>
 		</div>
-		<div className={cn(button)}>
+		<div 
+			className={cn(button, onClick && "cursor-pointer")}
+			onClick={onClick}
+		>
 			{character.isHave?"보유중":"구매하기"}
 		</div>
 	</div>

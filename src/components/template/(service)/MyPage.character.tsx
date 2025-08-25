@@ -1,5 +1,6 @@
 import Section from "@/components/atom/Section";
 import CharacterCard from "@/components/organism/(service)/CharacterCard";
+import { Item } from "@/interfaces/Item";
 import { cn } from "fast-jsx/util";
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
@@ -99,7 +100,7 @@ function MyCharacter({characters}:{characters:Character[]}){
 
 }
 
-function CharacterList({point, characters}:{point:number, characters:Character[]}){
+function CharacterList({point, characters, onCharacterClick}:{point:number, characters:Character[], onCharacterClick?: (character: Character) => void}){
 	return <Section title="캐릭터"
 	 option={{smallTitle:true,}}
 	 right={
@@ -109,7 +110,45 @@ function CharacterList({point, characters}:{point:number, characters:Character[]
 	 }>
 	<div className="grid grid-cols-3 gap-[20px] justify-items-center">
 		{characters.map((character)=>
-		<CharacterCard.Abbreviation character={character} key={character.id}/>)}
+		<CharacterCard.Abbreviation 
+			character={character} 
+			key={character.id}
+			onClick={() => onCharacterClick?.(character)}
+		/>)}
+	</div>
+</Section>
+}
+
+export interface ItemRender extends Item{
+	isHave:boolean,
+}
+function ItemList({ 
+	items, 
+	onItemClick, 
+	userPoint = 0 
+}:{ 
+	items: ItemRender[];
+	onItemClick?: (item: ItemRender) => void;
+	userPoint?: number;
+}){
+	return <Section title="아이템"
+	 option={{smallTitle:true,}}
+	 >
+	<div className="grid grid-cols-3 gap-[20px] justify-items-center">
+		{items.map((item)=>
+		<CharacterCard.Abbreviation 
+			character={
+				{
+					id:item.id,
+					name:item.name,
+					imageUrl:item.imageUrl,
+					price:item.price,
+					isHave:item.isHave,
+				}
+			} 
+			key={item.id}
+			onClick={() => onItemClick?.(item)}
+		/>)}
 	</div>
 </Section>
 }
@@ -117,5 +156,6 @@ function CharacterList({point, characters}:{point:number, characters:Character[]
 const MyPageCharacterTemplate={
 	MyCharacter,
 	CharacterList,
+	ItemList,
 }
 export default MyPageCharacterTemplate;
