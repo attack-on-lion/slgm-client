@@ -2,6 +2,7 @@ export const storeTypes=['전체','음식점','카페','편의점','마트','기
 export type StoreType=typeof storeTypes[number];
 
 export interface Item{
+	id?: number, // 기프티콘 ID (선택적)
 	storeName:string,
 	name:string,
 	point:number,

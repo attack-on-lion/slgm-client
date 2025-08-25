@@ -44,6 +44,7 @@ export default function Client(){
 
 	// Gifticon을 Item으로 변환하는 함수
 	const convertGifticonToItem = (gifticon: any) => ({
+		id: gifticon.id, // ID 추가
 		storeName: "기프티콘 상점",
 		name: gifticon.name,
 		point: gifticon.price,
@@ -70,8 +71,14 @@ export default function Client(){
 
 		setIsPurchasing(true);
 		try {
+			// 기프티콘 ID 확인
+			const gifticonId = selectedItem.originalData.id;
+			if (!gifticonId) {
+				throw new Error('기프티콘 ID가 없습니다.');
+			}
+
 			// 기프티콘 구매 API 호출
-			await storeApi.purchaseGifticon(userId, selectedItem.originalData.id);
+			await storeApi.purchaseGifticon(userId, gifticonId);
 			
 			// 성공 시 모달 닫기
 			setIsPurchaseModalOpen(false);
@@ -94,17 +101,8 @@ export default function Client(){
 		return <Loading/>;
 	}
 
-	// 기본 데이터 (API 데이터가 없을 경우)
-	const defaultItems = [{
-		storeName:"추천 상점",
-		name:"추천 상품 1",		
-		point:1000,
-		imageUrl:"/images/characters/다람쥐.png",	
-		storeType:'음식점' as const,
-	}];
-
 	// API 데이터를 Item 타입으로 변환
-	const items = gifticonData?.gifticonlist?.map(convertGifticonToItem) || defaultItems;
+	const items = gifticonData?.gifticonlist?.map(convertGifticonToItem)??[];
 	const brandItems = storeBrandData?.stores || [];
 
 	return <div>
