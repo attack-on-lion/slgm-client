@@ -3,10 +3,8 @@
 import React, { useState, useEffect } from "react";
 import paymentApi from "@/services/api/payment";
 import { WeeklyExpenseResponse, MonthlyTop3Response, MonthlyComparisonResponse } from "@/interfaces/Payment";
-import useSign from "@/hooks/useSign";
 
 export default function AnalysisPage() {
-  const { userId } = useSign();
   const [selectedMonth, setSelectedMonth] = useState(8);
   const [weeklyData, setWeeklyData] = useState<WeeklyExpenseResponse | null>(null);
   const [top3Data, setTop3Data] = useState<MonthlyTop3Response | null>(null);
@@ -23,14 +21,12 @@ export default function AnalysisPage() {
   // API 데이터 조회
   useEffect(() => {
     const fetchData = async () => {
-      if (!userId) return;
-      
       try {
         setLoading(true);
         const [weeklyResponse, top3Response, comparisonResponse] = await Promise.all([
-          paymentApi.getWeeklyExpenses(userId),
-          paymentApi.getMonthlyTop3(userId),
-          paymentApi.getMonthlyComparison(userId, selectedMonth)
+          paymentApi.getWeeklyExpenses(1),
+          paymentApi.getMonthlyTop3(1),
+          paymentApi.getMonthlyComparison(1, selectedMonth)
         ]);
         
         setWeeklyData(weeklyResponse);
@@ -50,7 +46,7 @@ export default function AnalysisPage() {
     };
 
     fetchData();
-  }, [selectedMonth, userId]);
+  }, [selectedMonth]);
   
   const getTopExpenses = () => {
     if (!top3Data) return [];
@@ -163,12 +159,12 @@ export default function AnalysisPage() {
               <div className="flex items-center justify-center py-4">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#42D2B8]"></div>
               </div>
-            ) : monthlyComparisonData && monthlyComparisonData.topCategories.length > 0 ? (
+            ) : (monthlyComparisonData?.items?.length || 0) > 0 ? (
               <div className="flex items-end justify-between h-32">
-                {monthlyComparisonData.topCategories.map((category, index) => {
-                  const maxAmount = Math.max(...monthlyComparisonData.topCategories.map(c => c.currentMonthAmount));
-                  const currentHeight = (category.currentMonthAmount / maxAmount) * 100;
-                  const previousHeight = (category.previousMonthAmount / maxAmount) * 100;
+                {monthlyComparisonData?.items?.map((category, index) => {
+                  const maxAmount = Math.max(...(monthlyComparisonData?.items?.map(c => c.totalCurrent) || []));
+                  const currentHeight = (category.totalCurrent / maxAmount) * 100;
+                  const previousHeight = (category.totalPrevious / maxAmount) * 100;
                   
                   return (
                     <div key={category.rank} className="flex flex-col items-center">
@@ -198,7 +194,7 @@ export default function AnalysisPage() {
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#42D2B8]"></div>
               </div>
-            ) : weeklyData ? (
+            ) : weeklyData?.days ? (
               <div className="h-48 relative">
                 {/* 차트 영역 */}
                 <div className="h-40 relative mb-2">

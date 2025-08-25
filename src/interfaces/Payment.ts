@@ -100,11 +100,10 @@ export interface MonthlyTop3Response {
 // 전월 대비 지출 상승폭 카테고리
 export interface MonthlyComparisonCategory {
   rank: number;
+  categoryId: number;
   categoryName: string;
-  currentMonthAmount: number;
-  previousMonthAmount: number;
-  increaseAmount: number;
-  increasePercentage: number;
+  totalCurrent: number;
+  totalPrevious: number;
 }
 
 // 전월 대비 지출 상승폭 top4 응답
@@ -112,5 +111,5 @@ export interface MonthlyComparisonResponse {
   userId: number;
   currentMonth: string;
   previousMonth: string;
-  topCategories: MonthlyComparisonCategory[];
+  items: MonthlyComparisonCategory[];
 }

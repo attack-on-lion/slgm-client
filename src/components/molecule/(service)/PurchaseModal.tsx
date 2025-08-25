@@ -1,5 +1,6 @@
 'use client'
 import { cn } from "fast-jsx/util";
+import Image from "next/image";
 import { useState } from "react";
 
 interface PurchaseModalProps {
@@ -50,10 +51,12 @@ export default function PurchaseModal({
           
           <div className="flex flex-col items-center mb-[24px]">
             <div className="w-[80px] h-[80px] bg-gray-100 rounded-[12px] mb-[12px] flex items-center justify-center">
-              <img 
+              <Image
                 src={item.imageUrl} 
                 alt={item.name}
                 className="w-[60px] h-[60px] object-contain"
+                width={60}
+                height={60}
               />
             </div>
             {item.storeName && (

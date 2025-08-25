@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import challengeApi from "@/services/api/challenge";
 
 export default function ChallengeSetupPage() {
   const router = useRouter();
@@ -11,16 +12,66 @@ export default function ChallengeSetupPage() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const handleClose = () => {
     router.back();
   };
 
-  const handleStartChallenge = () => {
-    // 챌린지 시작 로직
-    console.log("챌린지 시작:", { challengeType, duration, scope, selectedCategory });
-    // 여기에 실제 챌린지 시작 API 호출 등을 추가할 수 있습니다
-    router.push("/challenge");
+  const handleStartChallenge = async () => {
+    if (scope === "카테고리 선택" && !selectedCategory) {
+      alert("카테고리를 선택해주세요.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // 챌린지 유형을 API 형식으로 변환
+      const challengeTypeMap: Record<string, 'pay_not' | 'pay_less' | 'pay_save'> = {
+        "안쓰기": "pay_not",
+        "적게쓰기": "pay_less", 
+        "모으기": "pay_save"
+      };
+
+      // 기간을 숫자로 변환
+      const durationMap = {
+        "3일": 3,
+        "7일": 7,
+        "14일": 14,
+        "30일": 30
+      };
+
+      // 시작일과 종료일 계산
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(startDate.getDate() + durationMap[duration]);
+
+      const challengeData = {
+        user_id: "1", // 실제 사용자 ID로 변경 필요
+        challengeName: `${challengeType} 챌린지`,
+        challengeType: challengeTypeMap[challengeType],
+        challengeDays: durationMap[duration],
+        startAt: startDate.toISOString().split('T')[0],
+        endAt: endDate.toISOString().split('T')[0],
+        createdAt: startDate.toISOString().split('T')[0],
+        categories: scope === "카테고리 선택" ? [selectedCategory] : ["전체"]
+      };
+
+      const response = await challengeApi.createChallenge(challengeData);
+      
+      if (response.id) {
+        alert("챌린지가 성공적으로 시작되었습니다!");
+        router.push("/challenge");
+      } else {
+        alert("챌린지 시작에 실패했습니다. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error('챌린지 생성 실패:', error);
+      alert("챌린지 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleCategoryDropdown = () => {
@@ -34,7 +85,7 @@ export default function ChallengeSetupPage() {
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setScope("카테고리 선택");
-    setShowCategoryDropdown(false); // 선택 후 드롭다운 닫기
+    setShowCategoryDropdown(false);
   };
 
   // 상세정보 모달 자동 숨김 (5초 후)
@@ -270,9 +321,16 @@ export default function ChallengeSetupPage() {
       <section className="px-5 mt-8 pb-8">
         <button
           onClick={handleStartChallenge}
-          className="w-full bg-[#42D2B8] text-white py-4 rounded-2xl text-[16px] font-semibold hover:bg-[#3BC4A8] active:scale-95 transition-all"
+          disabled={loading}
+          className={`
+            w-full py-4 rounded-2xl text-[16px] font-semibold transition-all
+            ${loading 
+              ? "bg-slate-300 text-slate-500 cursor-not-allowed" 
+              : "bg-[#42D2B8] text-white hover:bg-[#3BC4A8] active:scale-95"
+            }
+          `}
         >
-          챌린지 시작하기
+          {loading ? "챌린지 생성 중..." : "챌린지 시작하기"}
         </button>
       </section>
 

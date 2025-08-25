@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useSign from "@/hooks/useSign";
+import paymentApi from "@/services/api/payment";
+import { PaymentItem, PaymentListResponse } from "@/interfaces/Payment";
 
 export default function ReportsPage() {
   const router = useRouter();
-  const { userData } = useSign();
   
   // 필터 상태
   const [startDate, setStartDate] = useState("2025-02-05");
@@ -15,6 +15,69 @@ export default function ReportsPage() {
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  
+  // API 데이터 상태
+  const [paymentData, setPaymentData] = useState<PaymentListResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  
+  // 필터 변경 시 페이지 리셋
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [startDate, endDate, selectedCategory]);
+
+  // 결제내역 데이터 조회
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        setLoading(true);
+        const response = await paymentApi.getPayments(1, {
+          from: startDate,
+          to: endDate,
+          page: currentPage,
+          size: 15,
+          category: selectedCategory !== "전체" ? selectedCategory : undefined
+        });
+        
+        if (currentPage === 0) {
+          // 첫 페이지인 경우 데이터 교체
+          setPaymentData(response);
+        } else {
+          // 추가 페이지인 경우 기존 데이터에 추가
+          setPaymentData(prev => prev ? {
+            ...prev,
+            items: [...prev.items, ...response.items],
+            pageInfo: response.pageInfo
+          } : response);
+        }
+      } catch (error) {
+        console.error('결제내역 조회 실패:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPayments();
+  }, [startDate, endDate, selectedCategory, currentPage]);
+
+  // 무한스크롤 구현
+  useEffect(() => {
+    const handleScroll = () => {
+      if (loading || !paymentData?.pageInfo.hasNext) return;
+      
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      
+      // 스크롤이 하단에 가까워지면 다음 페이지 로드
+      if (scrollTop + windowHeight >= documentHeight - 100) {
+        setCurrentPage(prev => prev + 1);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loading, paymentData?.pageInfo.hasNext]);
   
   // 샘플 결제내역 데이터 (더 많은 데이터 추가)
   const paymentHistory = [
@@ -148,15 +211,27 @@ export default function ReportsPage() {
     return true;
   });
 
-  // 날짜별로 그룹화
-  const groupedPayments = filteredPayments.reduce((groups, payment) => {
-    const date = payment.date;
+  // API 데이터를 사용한 날짜별 그룹화
+  const groupedPayments = paymentData ? paymentData.items.reduce((groups, payment) => {
+    const date = payment.transactionAt.split('T')[0];
     if (!groups[date]) {
       groups[date] = [];
     }
-    groups[date].push(payment);
+    groups[date].push({
+      id: payment.id,
+      store: payment.storeName,
+      time: new Date(payment.transactionAt).toLocaleTimeString('ko-KR', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      }),
+      category: payment.category.name,
+      amount: payment.amount,
+      date: date,
+      type: payment.direction === 'INFLOW' ? '입금' : '출금'
+    });
     return groups;
-  }, {} as Record<string, typeof filteredPayments>);
+  }, {} as Record<string, any[]>) : {};
 
   // 날짜 포맷팅
   const formatDate = (dateStr: string) => {
@@ -174,10 +249,8 @@ export default function ReportsPage() {
     }
   };
 
-  // 총 사용 금액 계산
-  const totalAmount = filteredPayments
-    .filter(payment => payment.type === "출금")
-    .reduce((sum, payment) => sum + payment.amount, 0);
+  // API 데이터를 사용한 총 사용 금액 계산
+  const totalAmount = paymentData ? paymentData.summary.totalExpense : 0;
 
   return (
     <div className="min-h-screen bg-[#F5F6F8]">
@@ -316,43 +389,81 @@ export default function ReportsPage() {
 
         {/* 결제 내역 목록 */}
         <section>
-          {Object.entries(groupedPayments).length > 0 ? (
-            Object.entries(groupedPayments).map(([date, payments]) => (
-              <div key={date} className="mb-6">
-                <h3 className="text-[16px] font-semibold text-slate-700 mb-3 px-1">
-                  {formatDate(date)}
-                </h3>
-                
-                <div className="space-y-3">
-                  {payments.map((payment) => (
-                    <div key={payment.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-                      <div className="flex items-center justify-between">
-                        {/* 왼쪽: 가맹점명과 시간 */}
-                        <div>
-                          <p className="text-[16px] font-bold text-slate-800">{payment.store}</p>
-                          <p className="text-[14px] text-slate-500 mt-1">{payment.time}</p>
-                        </div>
-                        
-                        {/* 오른쪽: 카테고리와 금액 */}
-                        <div className="text-right">
-                          <p className="text-[14px] text-[#42B6A1]">{payment.category}</p>
-                          <p className={`text-[16px] font-bold mt-1 ${
-                            payment.type === "입금" ? "text-[#10B981]" : "text-slate-800"
-                          }`}>
-                            {payment.type === "입금" ? "+" : "-"}{payment.amount.toLocaleString()}원
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#42D2B8]"></div>
+            </div>
+          ) : paymentData && paymentData.items.length > 0 ? (
+            <>
+              {/* 요약 정보 - 임시 주석처리 */}
+              {/* <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6">
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-[12px] text-slate-500">총 지출</p>
+                    <p className="text-[16px] font-bold text-slate-800 whitespace-nowrap">{paymentData.summary.totalExpense.toLocaleString()}원</p>
+                  </div>
+                  <div>
+                    <p className="text-[12px] text-slate-500">총 수입</p>
+                    <p className="text-[16px] font-bold text-[#10B981] whitespace-nowrap">{paymentData.summary.totalIncome.toLocaleString()}원</p>
+                  </div>
+                  <div>
+                    <p className="text-[12px] text-slate-500">거래 건수</p>
+                    <p className="text-[16px] font-bold text-slate-800 whitespace-nowrap">{paymentData.summary.count}건</p>
+                  </div>
                 </div>
-              </div>
-            ))
+              </div> */}
+
+              {/* 결제내역 목록 */}
+              {Object.entries(groupedPayments).length > 0 ? (
+                Object.entries(groupedPayments).map(([date, payments]) => (
+                  <div key={date} className="mb-6">
+                    <h3 className="text-[16px] font-semibold text-slate-700 mb-3 px-1">
+                      {formatDate(date)}
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {payments.map((payment) => (
+                        <div key={payment.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+                          <div className="flex items-center justify-between">
+                            {/* 왼쪽: 가맹점명과 시간 */}
+                            <div>
+                              <p className="text-[16px] font-bold text-slate-800">{payment.store}</p>
+                              <p className="text-[14px] text-slate-500 mt-1">{payment.time}</p>
+                            </div>
+                            
+                            {/* 오른쪽: 카테고리와 금액 */}
+                            <div className="text-right">
+                              <p className="text-[14px] text-[#42B6A1]">{payment.category}</p>
+                              <p className={`text-[16px] font-bold mt-1 ${
+                                payment.type === "입금" ? "text-[#10B981]" : "text-slate-800"
+                              }`}>
+                                {payment.type === "입금" ? "+" : "-"}{payment.amount.toLocaleString()}원
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-slate-500 text-[16px]">해당 조건의 결제내역이 없습니다.</p>
+                </div>
+              )}
+
+                             {/* 무한스크롤 로딩 인디케이터 */}
+               {paymentData.pageInfo.hasNext && (
+                 <div className="flex justify-center mt-6">
+                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#42D2B8]"></div>
+                 </div>
+               )}
+            </>
           ) : (
             <div className="text-center py-12">
               <p className="text-slate-500 text-[16px]">해당 조건의 결제내역이 없습니다.</p>
-            </div>
-          )}
+              </div>
+            )}
         </section>
       </main>
     </div>

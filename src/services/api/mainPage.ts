@@ -25,13 +25,22 @@ export const mainPageApi = {
       });
 
       if (!response.ok) {
-        throw new Error('메인 페이지 데이터 조회에 실패했습니다.');
+        console.warn('메인 페이지 API 응답이 성공적이지 않습니다. 더미 데이터를 사용합니다.');
+        return DUMMY_MAIN_PAGE_DATA;
       }
 
-      return await response.json() as MainPageData;
+      const data = await response.json() as MainPageData;
+      
+      // 데이터 유효성 검사
+      if (!data || typeof data !== 'object') {
+        console.warn('메인 페이지 API 응답 데이터가 유효하지 않습니다. 더미 데이터를 사용합니다.');
+        return DUMMY_MAIN_PAGE_DATA;
+      }
+
+      return data;
     } catch (error) {
-      console.error('메인 페이지 데이터 조회 실패:', error);
-      // CORS 문제 해결 전까지 더미 데이터 반환
+      console.warn('메인 페이지 데이터 조회 중 오류가 발생했습니다. 더미 데이터를 사용합니다:', error);
+      // 네트워크 오류나 기타 예외 상황에서도 더미 데이터 반환
       return DUMMY_MAIN_PAGE_DATA;
     }
   },
