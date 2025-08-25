@@ -33,6 +33,11 @@ async function purchaseGifticon(userId:number, gifticonId:number){
 	return response.data
 }
 
+async function implementGifticon(userId:number, gifticonId:number){
+	const response=await api.patch<StoreApi>(`/users/${userId}/gifticons/${gifticonId}/use`)
+	return response.data
+}
+
 const storeApi={
 	getStore,
 	getStoreBrand,
@@ -40,6 +45,7 @@ const storeApi={
 	getGifticon,
 	getCoupon,
 	purchaseGifticon,
+	implementGifticon
 }
 
 export default storeApi

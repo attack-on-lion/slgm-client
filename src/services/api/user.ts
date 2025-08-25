@@ -49,5 +49,23 @@ export const userApi = {
   async getUserProfile(userId: number): Promise<UserProfile> {
     const response = await api.get<UserProfile>(`/users/${userId}`);
     return response.data;
+  },
+  async getUserPoint(userId: number): Promise<UserPointUsage> {
+    const response = await api.get<UserPointUsage>(`/users/${userId}/points/ledger`);
+    return response.data;
   }
 };
+
+
+interface UserPointUsage {
+  items:{
+    id:number,
+    userId:number,
+    sourceKind:string,
+    delta:number,
+    balance:number,
+    challengeDays:number,
+    createdAt:Date,
+    updatedAt:Date
+  }[]
+}
