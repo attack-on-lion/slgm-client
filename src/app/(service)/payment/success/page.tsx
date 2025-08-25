@@ -1,23 +1,15 @@
-'use client'
-import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "fast-jsx/util";
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
-export default function PaymentSuccessPage(){
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const [isLoading, setIsLoading] = useState(true);
+interface PaymentSuccessPageProps {
+  searchParams: {
+    code?: string;
+    gifticonId?: string;
+    userId?: string;
+  };
+}
 
-	// URL 파라미터에서 정보 가져오기
-	const code = searchParams.get('code');
-	const gifticonId = searchParams.get('gifticonId');
-	const userId = searchParams.get('userId');
-
-	useEffect(() => {
-		// 페이지 로드 완료 후 로딩 상태 해제
-		setIsLoading(false);
-	}, []);
-
+export default function PaymentSuccessPage({ searchParams }: PaymentSuccessPageProps) {
 	const container = {
 		display: 'flex flex-col items-center justify-center',
 		size: 'w-full h-screen',
@@ -52,17 +44,6 @@ export default function PaymentSuccessPage(){
 		style: 'cursor-pointer',
 	};
 
-	if (isLoading) {
-		return (
-			<div className={cn(container)}>
-				<div className={cn(successCard)}>
-					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#42D2B8] mx-auto mb-4"></div>
-					<p className="text-gray-600">처리 중...</p>
-				</div>
-			</div>
-		);
-	}
-
 	return (
 		<div className={cn(container)}>
 			<div className={cn(successCard)}>
@@ -91,18 +72,15 @@ export default function PaymentSuccessPage(){
 				{/* 디버깅용 정보 (개발 환경에서만 표시) */}
 				{process.env.NODE_ENV === 'development' && (
 					<div className="text-xs text-gray-400 mt-4 p-2 bg-gray-50 rounded">
-						<div>Code: {code}</div>
-						<div>Gifticon ID: {gifticonId}</div>
-						<div>User ID: {userId}</div>
+						<div>Code: {searchParams.code}</div>
+						<div>Gifticon ID: {searchParams.gifticonId}</div>
+						<div>User ID: {searchParams.userId}</div>
 					</div>
 				)}
 
-				<button 
-					onClick={() => router.push('/mainpage')}
-					className={cn(button)}
-				>
+				<Link href="/mainpage" className={cn(button)}>
 					메인으로 돌아가기
-				</button>
+				</Link>
 			</div>
 		</div>
 	);
