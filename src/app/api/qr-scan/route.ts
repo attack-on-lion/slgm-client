@@ -1,4 +1,3 @@
-import storeApi from "@/services/api/store";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -12,8 +11,17 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 기프티콘 사용 처리 API 호출
-    await storeApi.implementGifticon(parseInt(userId), parseInt(gifticonId));
+    // 기프티콘 사용 처리 API 호출 (fetch 사용)
+    const response = await fetch(`${request.nextUrl.origin}/api/server/users/${userId}/gifticons/${gifticonId}/use`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status} ${response.statusText}`);
+    }
     
     // 성공 시 payment/success 페이지로 리다이렉트
     return NextResponse.redirect(new URL('/payment/success', request.url));
