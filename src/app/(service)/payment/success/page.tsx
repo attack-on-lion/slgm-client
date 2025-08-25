@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { cn } from "fast-jsx/util";
 
-export default function PaymentPage(){
+export default function PaymentSuccessPage(){
 	const router = useRouter();
 
 	const container = {
@@ -74,3 +74,4 @@ export default function PaymentPage(){
 		</div>
 	);
 }
+export const dynamic = 'force-dynamic';

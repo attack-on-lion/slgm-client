@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updatePaymentStatus } from "./status/route";
+import { updatePaymentStatus } from "@/utils/paymentStatus";
 
 export async function POST(request: NextRequest) {
   try {
