@@ -41,9 +41,14 @@ async function getPayments(userId: number, params: PaymentQueryParams): Promise<
 }
 
 // 주간 소비량 조회
-async function getWeeklyExpenses(userId: number): Promise<WeeklyExpenseResponse> {
+async function getWeeklyExpenses(userId: number, month?: number): Promise<WeeklyExpenseResponse> {
   try {
-    const response = await api.get(`/payments/${userId}/weekly`);
+    const queryParams = new URLSearchParams();
+    if (month !== undefined) {
+      queryParams.append('month', month.toString());
+    }
+    
+    const response = await api.get(`/payments/${userId}/weekly?${queryParams.toString()}`);
     return response.data as WeeklyExpenseResponse;
   } catch (error) {
     console.error('주간 소비량 조회 실패:', error);
@@ -52,9 +57,14 @@ async function getWeeklyExpenses(userId: number): Promise<WeeklyExpenseResponse>
 }
 
 // 월간 TOP3 카테고리 조회
-async function getMonthlyTop3(userId: number): Promise<MonthlyTop3Response> {
+async function getMonthlyTop3(userId: number, month?: number): Promise<MonthlyTop3Response> {
   try {
-    const response = await api.get(`/payments/${userId}/monthly-top3`);
+    const queryParams = new URLSearchParams();
+    if (month !== undefined) {
+      queryParams.append('month', month.toString());
+    }
+    
+    const response = await api.get(`/payments/${userId}/monthly-top3?${queryParams.toString()}`);
     return response.data as MonthlyTop3Response;
   } catch (error) {
     console.error('월간 TOP3 조회 실패:', error);

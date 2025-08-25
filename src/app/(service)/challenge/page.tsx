@@ -24,6 +24,32 @@ const getChallengeTypeKorean = (challengeType: string): string => {
   }
 };
 
+// 카테고리를 영어에서 한국어로 변환하는 함수
+const getCategoryKorean = (category: string): string => {
+  const categoryMap: { [key: string]: string } = {
+    'CAFE': '카페',
+    'FOOD': '음식점',
+    'TRANSPORTATION': '교통',
+    'SALARY': '입금',
+    'UTILITY': '통신',
+    'SHOPPING': '쇼핑',
+    'EDUCATION': '교육',
+    'OTHERS': '기타',
+    'ENTERTAINMENT': '유흥',
+    'cafe': '카페',
+    'food': '음식점',
+    'transportation': '교통',
+    'salary': '입금',
+    'utility': '통신',
+    'shopping': '쇼핑',
+    'education': '교육',
+    'others': '기타',
+    'entertainment': '유흥'
+  };
+  
+  return categoryMap[category] || category;
+};
+
 export default function ChallengePage() {
   const router = useRouter();
   const { userId, userData } = useSign();
@@ -138,7 +164,7 @@ export default function ChallengePage() {
             {recommendations.map((challenge, index) => (
               <div key={index} className="min-w-[280px] bg-[#DDF6F2] border-2 border-[#42D2B8] rounded-2xl shadow-sm p-5 flex flex-col relative min-h-[320px]">
                 <h4 className="text-[22px] font-bold text-[#006D6F] mb-4 line-clamp-2 text-center">
-                  {Array.isArray(challenge.categories) ? challenge.categories.join(' ') : challenge.categories} {getChallengeTypeKorean(challenge.challengeType)}
+                  {Array.isArray(challenge.categories) ? challenge.categories.map(cat => getCategoryKorean(cat)).join(' ') : getCategoryKorean(challenge.categories)} {getChallengeTypeKorean(challenge.challengeType)}
                 </h4>
                 
                 <div className="flex-1 space-y-4 mb-4">
