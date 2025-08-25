@@ -11,7 +11,12 @@ import { cn } from "fast-jsx/util";
 import { useEffect, useState } from "react";
 import Loading from "@/components/template/Loading";
 
-// 기존 하드코딩된 캐릭터 배열 제거
+const ownedCharacters=[
+	'다람쥐',
+	'고양이',
+	'쥐돌이',
+	'갱쥐'
+]
 
 export default function Client(){
 	const [items, setItems]=useState<ItemRender[]>([])
@@ -166,13 +171,14 @@ export default function Client(){
 		<ServiceHeader title="캐릭터 상점" option={{isBack:true}}/>
 		<div className={cn(body)}>
 			<MyPageCharacterTemplate.MyCharacter
-				characters={characters.filter(char => char.isHave).map((character)=>({
-					id:character.id,
-					name:character.name,
-					imageUrl:character.imageUrl,
-					isHave:character.isHave,
-					price:character.price,
-				}))}
+				characters={ownedCharacters.map((character,index)=>({
+					id:index,
+					name:character,
+					imageUrl:`/images/characters/${character}.png`,
+					isHave:true,
+					price:10000,
+				})) 
+				}
 			/>
 			<MyPageCharacterTemplate.CharacterList 
 				point={userPoint} 
